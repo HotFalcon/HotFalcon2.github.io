@@ -27,7 +27,9 @@ var scene = new BABYLON.Scene(engine);
 var gravityVector = new BABYLON.Vector3(0, -9.81, 0);
 scene.enablePhysics(gravityVector, new BABYLON.CannonJSPlugin());
 
-scene.clearColor = new BABYLON.Color3(0.5, 0.8, 0.5);
+scene.clearColor = new BABYLON.Color3(0.5, 2, 0.7);
+scene.material.diffuseTexture = new BABYLON.Texture('resources/sky.jpg', scene);
+
 
 var _xFn = function(t) {var fns = [function(t) {return (Math.pow((1-t),3)*0.005)+(3*t*Math.pow((1-t),2)*0.1)+(3*Math.pow(t,2)*(1-t)*0.025)+(Math.pow(t,3)*0.17)},function(t) {return (Math.pow((1-t),3)*0.17)+(3*t*Math.pow((1-t),2)*0.315)+(3*Math.pow(t,2)*(1-t)*0.3925)+(Math.pow(t,3)*0.1275)},function(t) {return (Math.pow((1-t),3)*0.1275)+(3*t*Math.pow((1-t),2)*-0.1375)+(3*Math.pow(t,2)*(1-t)*0.4725)+(Math.pow(t,3)*0.23)},function(t) {return (Math.pow((1-t),3)*0.23)+(3*t*Math.pow((1-t),2)*-0.0125)+(3*Math.pow(t,2)*(1-t)*0.445)+(Math.pow(t,3)*0.3675)},function(t) {return (Math.pow((1-t),3)*0.3675)+(3*t*Math.pow((1-t),2)*0.29)+(3*Math.pow(t,2)*(1-t)*0.9675)+(Math.pow(t,3)*0.63)},function(t) {return (Math.pow((1-t),3)*0.63)+(3*t*Math.pow((1-t),2)*0.2925)+(3*Math.pow(t,2)*(1-t)*0.8)+(Math.pow(t,3)*0.545)},function(t) {return (Math.pow((1-t),3)*0.545)+(3*t*Math.pow((1-t),2)*0.29)+(3*Math.pow(t,2)*(1-t)*0.77)+(Math.pow(t,3)*0.765)},function(t) {return (Math.pow((1-t),3)*0.765)+(3*t*Math.pow((1-t),2)*0.76)+(3*Math.pow(t,2)*(1-t)*0.8925)+(Math.pow(t,3)*0.8925)},function(t) {return (Math.pow((1-t),3)*0.8925)+(3*t*Math.pow((1-t),2)*0.8925)+(3*Math.pow(t,2)*(1-t)*0.985)+(Math.pow(t,3)*0.985)}];var i = Math.max(0,Math.min(8, Math.floor(t * 9)));return fns[i]((t - (i/9)) * 9);};
 var _yFn = function(t) {var fns = [function(t) {return (Math.pow((1-t),3)*0.006812477111816406)+(3*t*Math.pow((1-t),2)*0.025)+(3*Math.pow(t,2)*(1-t)*0.3718124771118164)+(Math.pow(t,3)*0.1543124771118164)},function(t) {return (Math.pow((1-t),3)*0.1543124771118164)+(3*t*Math.pow((1-t),2)*-0.06318752288818359)+(3*Math.pow(t,2)*(1-t)*0.3293124771118164)+(Math.pow(t,3)*0.3443124771118164)},function(t) {return (Math.pow((1-t),3)*0.3443124771118164)+(3*t*Math.pow((1-t),2)*0.3593124771118164)+(3*Math.pow(t,2)*(1-t)*0.5268124771118164)+(Math.pow(t,3)*0.5318124771118165)},function(t) {return (Math.pow((1-t),3)*0.5318124771118165)+(3*t*Math.pow((1-t),2)*0.5368124771118165)+(3*Math.pow(t,2)*(1-t)*0.9143124771118164)+(Math.pow(t,3)*0.9343124771118164)},function(t) {return (Math.pow((1-t),3)*0.9343124771118164)+(3*t*Math.pow((1-t),2)*0.9543124771118164)+(3*Math.pow(t,2)*(1-t)*0.7193124771118165)+(Math.pow(t,3)*0.7468124771118164)},function(t) {return (Math.pow((1-t),3)*0.7468124771118164)+(3*t*Math.pow((1-t),2)*0.7743124771118164)+(3*Math.pow(t,2)*(1-t)*0.4018124771118164)+(Math.pow(t,3)*0.4143124771118164)},function(t) {return (Math.pow((1-t),3)*0.4143124771118164)+(3*t*Math.pow((1-t),2)*0.4268124771118164)+(3*Math.pow(t,2)*(1-t)*0.06181247711181641)+(Math.pow(t,3)*0.2018124771118164)},function(t) {return (Math.pow((1-t),3)*0.2018124771118164)+(3*t*Math.pow((1-t),2)*0.3418124771118164)+(3*Math.pow(t,2)*(1-t)*0.4718124771118164)+(Math.pow(t,3)*0.2918124771118164)},function(t) {return (Math.pow((1-t),3)*0.2918124771118164)+(3*t*Math.pow((1-t),2)*0.11181247711181641)+(3*Math.pow(t,2)*(1-t)*0.0743124771118164)+(Math.pow(t,3)*0.0743124771118164)}];var i = Math.max(0,Math.min(8, Math.floor(t * 9)));return fns[i]((t - (i/9)) * 9);};
@@ -183,7 +185,7 @@ height: 0.5,
 depth: 12
 }, scene);
 point.material = new BABYLON.StandardMaterial("pointMaterial", scene);
-point.material.diffuseColor = new BABYLON.Color3(1, 0, 1);
+point.material.diffuseColor = new BABYLON.Color3(1, 0.7, 1);
 point.position = new BABYLON.Vector3(x, 0.1, z);
 point.rotation.y = zrot;
 point.physicsImpostor = new BABYLON.PhysicsImpostor(point, BABYLON.PhysicsImpostor.BoxImpostor, {
@@ -229,7 +231,7 @@ width: .25,
 depth: 12
 }, scene);
 ramp.material = new BABYLON.StandardMaterial("rampMaterial", scene);
-ramp.material.diffuseColor = new BABYLON.Color3(1, 1, 0);
+ramp.material.diffuseColor = new BABYLON.Color3(0, 1, 2);
 ramp.physicsImpostor = new BABYLON.PhysicsImpostor(ramp, BABYLON.PhysicsImpostor.BoxImpostor, {
 mass: 0,
 restitution: 0.9
@@ -248,14 +250,14 @@ depth: 12
 }, scene);
 angle = -derivAngle(t, xFn, zFn);
 wall.material = new BABYLON.StandardMaterial("wallMaterial", scene);
-wall.material.diffuseColor = new BABYLON.Color3(1, 1, 0);
+wall.material.diffuseColor = new BABYLON.Color3(2, 0, 1);
 wall.physicsImpostor = new BABYLON.PhysicsImpostor(wall, BABYLON.PhysicsImpostor.BoxImpostor, {
 mass: 0,
 restitution: 0.9
 }, scene);
 wall.position = new BABYLON.Vector3(xFn(t) + (offset * Math.sin(angle)), 4, zFn(t) + (offset * Math.cos(angle)));
 wall.rotation.y = angle + (Math.PI / 2);
-return wall;
+return wall
 }
 
 engine.runRenderLoop(scene.render.bind(scene));
