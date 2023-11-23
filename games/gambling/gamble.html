@@ -39,7 +39,7 @@ text-align: center;
       color: black;
     }
 
-    .form-control {
+    .bet {
   background-color:lightblue;
   border:3px solid blue;
   height:50px;
@@ -53,6 +53,27 @@ text-align: center;
   left: 40px;
   
   }
+  
+  .button2{
+    background-color: #f40000;
+      border: none;
+      color: rgb(0, 0, 0);
+      
+      
+      text-decoration: none;
+      height: 50px;
+      width: 150px;
+      font-size: 24px;
+      margin: 4px 20px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition-duration: 0.4s;
+      float:left;
+      position: absolute;
+        top: 300px;
+        left: 1000px;
+text-align: center;
+  }
 
 #div1{
   position: absolute;
@@ -65,6 +86,20 @@ text-align: center;
   position: absolute;
   top: 188px;
   left: 35px;
+  font-size: 18px;
+}
+
+#div3{
+  position: absolute;
+  top: 188px;
+  left: 1200px;
+  font-size: 18px;
+}
+
+#div4{
+  position: absolute;
+  top: 300px;
+  left: 1200px;
   font-size: 18px;
 }
 
@@ -117,21 +152,46 @@ display: flex;
     <div id="div2">
         <p></p>
     </div>
+  </div>
+  <div id="div3">
+      <h1></h1>
+  </div>
+  <div id="div4">
+    <font size="+2"><h1 id="counterText">Diamonds: <span id="counterValue">100</span></h1></font>
+
+    </p>
+  </div>
+  <div id="div5">
+    <p></p>
+</div>
     <p id="demo"></p>
     <div class="container_row">
       <canvas id="canvas" width="1000" height="800" class="canvasr"></canvas>
       <button type="button" class="button button1" onclick="rand()" >Bet</button>
-
-                  <input type="text" class="form-control" id="bet" placeholder="Diamonds">
+      <button type="button" class="button2" onclick="restart()" >Restart</button>
+                  <input type="text" class="bet" id="bet" placeholder="Diamonds">
                   <input type="text" class="multi" id="multi" placeholder="Mulitplier">
     
    </div>
 	<script>
+  let counterValue = localStorage.getItem("counterValue");
+console.log("loga")
+  if (counterValue === null || isNaN(counterValue)) {
+    counterValue = 100;
+    updateCounterText(counterValue);
+  } else {
+    updateCounterText(parseInt(counterValue, 10));
+  }
+    
+    console.log("counter: " + counterValue);
 var cooldown = false;
 var cheight = 600;
 var cwidth = 1100;
 var wait = 100;
-//var bet = 2;
+var totalStart = 100;
+
+
+
 
 function draw() {
  const ctx = document.getElementById("canvas").getContext("2d");
@@ -139,10 +199,21 @@ function draw() {
       ctx.fillStyle = "#424549";
       ctx.fillRect(200,0,cwidth,cheight);
   }   
-
+  
 function rand(){
+
   var bet = document.querySelector("#bet");
+
   var multi = document.querySelector("#multi");
+
+
+  console.log("multi: " + multi.value);
+
+
+
+
+
+console.log("bet: " + bet.value);
   if(cooldown == false){
     if(bet.value != "" && bet.value*10%10 == 0){
         if(multi.value != "" && multi.value*10%10 == 0){
@@ -165,6 +236,57 @@ function rand(){
                     var num = inc*i;
                 increase(i, num);
             } 
+
+            var time = i *wait;
+  var numbered = Math.round((Math.round((num + 1)*100)/100)*10000)/10000;
+
+  setTimeout(() => {
+    
+    var num2 = numbered *10;
+    var num3 = num2 * 10;
+    var multi = document.querySelector("#multi");
+    console.log("bet check: " + multi);
+      if(multi.value <= numbered){
+          if(numbered*100 % 100 == 0){
+            word(numbered + ".00x", "green"); 
+
+          }else if(num3 % 10 == 0){
+            word(numbered + "0x", "green");
+
+          }else{
+            word(numbered + "x", "green");
+            
+          }
+          
+          console.log("it is counting up");
+          counterValue = counterValue + (multi.value-1)*bet.value;
+          updateCounterText(counterValue);
+          localStorage.setItem("counterValue", counterValue);
+      }else{
+          if(numbered*100 % 100 == 0){
+            word(numbered + ".00x", "red");    
+          }else if(num3 % 10 == 0){
+            word(numbered + "0x", "red");
+          }else{
+            word(numbered + "x", "red");
+          }
+          console.log("it is counting ");
+          counterValue = counterValue - bet.value;
+          updateCounterText(counterValue);
+          localStorage.setItem("counterValue", counterValue);
+      }
+
+/*      const par4 = document.createElement("p");
+  const node4 = document.createTextNode("Placeholder counter");
+para4.appendChild(node4);
+const element3 = document.getElementById("div5");
+element4.appendChild(para4);
+*/
+      cooldown = false;
+    }, wait*5+1);
+
+
+
           }else{
             multi.style.border = "2px solid red";
             bet.style.border = "2px solid green";
@@ -186,31 +308,6 @@ function increase(i, num){
   var time = i *wait;
   var numbered = Math.round((Math.round((num + 1)*100)/100)*10000)/10000;
 
-  setTimeout(() => {
-    var num2 = numbered *10;
-    var num3 = num2 * 10;
-    var multi = document.querySelector("#multi");
-    var multi = multi.value;
-    console.log("bet check: " + multi);
-      if(multi <= numbered){
-          if(numbered*100 % 100 == 0){
-            word(numbered + ".00x", "green");             
-          }else if(num3 % 10 == 0){
-            word(numbered + "0x", "green");
-          }else{
-            word(numbered + "x", "green");
-          }
-      }else{
-          if(numbered*100 % 100 == 0){
-            word(numbered + ".00x", "red");    
-          }else if(num3 % 10 == 0){
-            word(numbered + "0x", "red");
-          }else{
-            word(numbered + "x", "red");
-          }
-      }
-      cooldown = false;
-    }, wait*5+1);
 
 
     setTimeout(() => {
@@ -247,12 +344,20 @@ function word(worded, colorx) {
   idk.fillText(worded, cwidth/2 -textWidth/4 , cheight / 2 );
 }
 
+function restart(){
+  localStorage.setItem("totalx", 100);
+  document.getElementById("counterValue").innerHTML = localStorage.getItem("totalx");
+}
+
+function updateCounterText(value) {
+    document.getElementById("counterValue").textContent = value;
+  }
+
 function start(){
 
 draw();
 
-
-
+console.log(counterValue);
 
   let heighty = screen.availHeight;
   let widthx = screen.availWidth;
@@ -268,6 +373,12 @@ const para2 = document.createElement("p");
 para2.appendChild(node2);
 const element2 = document.getElementById("div2");
 element2.appendChild(para2);
+
+const para3 = document.createElement("h1");
+  const node3 = document.createTextNode("Total Diamonds");
+para3.appendChild(node3);
+const element3 = document.getElementById("div3");
+element3.appendChild(para3);
 }//end start
 
 
