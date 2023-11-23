@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -345,8 +346,11 @@ function word(worded, colorx) {
 }
 
 function restart(){
-  localStorage.setItem("totalx", 100);
-  document.getElementById("counterValue").innerHTML = localStorage.getItem("totalx");
+  let counterValue = localStorage.getItem("counterValue");
+  localStorage.setItem("counterValue", "100");
+  
+  document.getElementById("counterValue").innerHTML = localStorage.getItem("counterValue");
+  console.log("reset: " + counterValue);
 }
 
 function updateCounterText(value) {
