@@ -1,0 +1,89 @@
+<html>
+<head>
+    <title></title>
+    <script src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+    google.load('search', '1');
+    google.setOnLoadCallback(OnLoad);
+    var search;
+
+    //i suggest instead of this to make keywords list so first to pick random keyword than to do search and pick random image
+    var keyword = 'idksk';
+
+    function OnLoad()
+    {
+        search = new google.search.ImageSearch();
+
+        search.setSearchCompleteCallback(this, searchComplete, null);
+
+        search.execute(keyword);
+    }
+
+    function searchComplete()
+    {
+        if (search.results && search.results.length > 0)
+        {
+            var rnd = Math.floor(Math.random() * search.results.length);
+
+            //you will probably use jQuery and something like: $('body').css('background-image', "url('" + search.results[rnd]['url'] + "')");
+            document.body.style.backgroundImage = "url('" + search.results[rnd]['url'] + "')";
+        }
+    }
+
+
+    // Function to get the mouse position
+function getMousePos(canvas, event) {
+  var rect = canvas.getBoundingClientRect();
+  return {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top,
+  };
+}
+
+// Function to check whether a point is inside a rectangle
+function isInside(pos, rect) {
+  return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y
+}
+
+// The rectangle should have x,y,width,height properties
+var rect = {
+  x: 100,
+  y: 100,
+  width: 200,
+  height: 100,
+};
+
+// Binding the click event on the canvas
+var canvas = document.getElementById('myCanvas');
+var context = canvas.getContext('2d');
+canvas.addEventListener('click', function(evt) {
+  var mousePos = getMousePos(canvas, evt);
+
+  if (isInside(mousePos, rect)) {
+    alert('clicked inside rect');
+  } else {
+    alert('clicked outside rect');
+  }
+}, false);
+
+// Question code
+function Playbutton(rect, lWidth, fillColor, lineColor) {
+  context.beginPath();
+  context.rect(rect.x, rect.y, rect.width, rect.height);
+  context.fillStyle = 'rgba(225,225,225,0.5)';
+  context.fill();
+  context.lineWidth = 2;
+  context.strokeStyle = '#000000';
+  context.stroke();
+  context.closePath();
+  context.font = '40pt Kremlin Pro Web';
+  context.fillStyle = '#000000';
+  context.fillText('Start', rect.x + rect.width / 4, rect.y + 64);
+}
+Playbutton(rect);
+    </script>
+</head>
+<body>
+
+</body>
+</html>
