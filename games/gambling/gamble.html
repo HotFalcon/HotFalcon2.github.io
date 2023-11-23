@@ -189,10 +189,10 @@ function increase(i, num){
   setTimeout(() => {
     var num2 = numbered *10;
     var num3 = num2 * 10;
-    var bet = document.querySelector("#bet");
-    var bet = bet.value;
-    console.log("bet check: " + bet);
-      if(bet <= numbered){
+    var multi = document.querySelector("#multi");
+    var multi = multi.value;
+    console.log("bet check: " + multi);
+      if(multi <= numbered){
           if(numbered*100 % 100 == 0){
             word(numbered + ".00x", "green");             
           }else if(num3 % 10 == 0){
