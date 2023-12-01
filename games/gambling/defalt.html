@@ -235,71 +235,25 @@ function rand(){
             var multi = 1/(Math.random());
             var flat = Math.round(multi*100)/100;
             console.log(flat);
-            var inc = (Math.round(((flat-1))*100)/100/5);
 
-            for(var i = 1; i <= 5; i++){
-                //println("i: " + i);
-                    var num = inc*i;
-                increase(i, num);
-            } 
-
-            var time = i *wait;
   var numbered = Math.round((Math.round((num + 1)*100)/100)*10000)/10000;
 
-  setTimeout(() => {
-    
+
     var num2 = numbered *10;
     var num3 = num2 * 10;
     var mult2 = document.querySelector("#multi");
     var bet = document.querySelector("#bet");
-    //console.log("bet check: " + bet.value);
-    //console.log("mult: " + mult2.value);
-      if(mult2.value <= numbered){
-          if(numbered*100 % 100 == 0){
-            word(numbered + ".00x", "#00ff00"); 
 
-          }else if(num3 % 10 == 0){
-            word(numbered + "0x", "#00ff00");
-
-          }else{
-            word(numbered + "x", "#00ff00");
-            
-          }
-          counterValue--;
-          counterValue++;
-          //console.log("it is counting up");
-          //console.log("counterValue after counting: " + counterValue);
-          //console.log("counter: " + counterValue + "| mult2.value: " + mult2.value + "| bet: " + bet.value);
-          //console.log("checking bug: " + (counterValue + (mult2.value-1)*bet.value));
+    /* future counter value calc
           counterValue = counterValue + ((mult2.value-1)*bet.value);
           updateCounterText(counterValue);
           localStorage.setItem("counterValue", counterValue);
-      }else{
-          if(numbered*100 % 100 == 0){
-            word(numbered + ".00x", "red");    
-          }else if(num3 % 10 == 0){
-            word(numbered + "0x", "red");
-          }else{
-            word(numbered + "x", "red");
-          }
-          //console.log("it is counting ");
-          //console.log("counterValue after counting: " + counterValue);
+
 
           counterValue = counterValue - bet.value;
           updateCounterText(counterValue);
           localStorage.setItem("counterValue", counterValue);
-      }
-
-/*      const par4 = document.createElement("p");
-  const node4 = document.createTextNode("Placeholder counter");
-para4.appendChild(node4);
-const element3 = document.getElementById("div5");
-element4.appendChild(para4);
 */
-      cooldown = false;
-    }, wait*5+1);
-
-
 
           }else{
             multi.style.border = "2px solid red";
@@ -319,26 +273,6 @@ element4.appendChild(para4);
 
 
 function increase(i, num){
-  var time = i *wait;
-  var numbered = Math.round((Math.round((num + 1)*100)/100)*10000)/10000;
-
-
-
-    setTimeout(() => {
-
-        var num2 = numbered *10;
-        var num3 = num2 * 10;
-        if(numbered*100 % 100 == 0){
-          word(numbered + ".00x", "white");           
-        }else if(num3 % 10 == 0){
-          word(numbered + "0x", "white");
-        }else{
-          word(numbered + "x", "white");
-        }    
-        const audio = new Audio("click.wav");
-      audio.play();
-      //console.log("clicked");           
-    }, time); 
 
 }
 function word(worded, colorx) {3
@@ -363,14 +297,9 @@ function restart(){
   counterValue--;
   counterValue++;
   localStorage.setItem('counterValue', counterValue);
-  //localStorage.setItem("counterValue", "100");
-  //counterValue = 100;
-  //localStorage.setItem("counterValue", "100");
+
           updateCounterText();
           
-  //counterValue = 100;
- // document.getElementById("counterValue").innerHTML = 100;
-  
 
   
 }
@@ -383,7 +312,7 @@ var next = counterValue + "x";
 function start(){
 
 draw();
-word("1.00x", "white");
+
 
 //console.log(counterValue);
 
