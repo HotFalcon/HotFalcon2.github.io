@@ -86,13 +86,13 @@ function generateBookmarklet() {
         console.log(ticketCount);
         cases += `
         case ${i*3}:
-            el.innerText = '${parseInt(values[0])}'; // Example for Section Number
+            el.innerText = '${parseInt(values[0])}'; 
             break;
         case ${i*3 + 1}:
-            el.innerText = '${parseInt(values[1])}'; // Example for Row Number
+            el.innerText = '${parseInt(values[1])}';
             break;
         case ${i*3 + 2}:
-            el.innerText = '${parseInt(values[2])+i}'; // Example for First Seat Number
+            el.innerText = '${parseInt(values[2])+i}';
             break;
         `;
     }
