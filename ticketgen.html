@@ -221,7 +221,11 @@ javascript:(function(){
         var labelClass = firstItem.querySelector('div[class*="ExtendedTicketMetaLabel"]').className;
         var valueClass = firstItem.querySelector('div[class*="ExtendedTicketMetaValue"]').className;
         var lineClass = firstItem.querySelector('div[class*="ExtendedTicketMetaLabel"] div').className;
-
+        
+        var closeButtons = document.querySelectorAll('button[data-testid="close-ticket"]');
+        closeButtons.forEach(function(button) {
+            button.disabled = true;
+        });
        
         var valueDivHTML = "<div class='" + itemClass + "'>" +
                                 "    <div class='" + labelClass + "'>" +
