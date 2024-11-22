@@ -85,15 +85,29 @@
             cursor: pointer;
         }
         .icon{
-        height: 45px;
-        width: 45px;
-        padding-right:10px;
-    }
+            height: 45px;
+            width: 45px;
+            padding-right:10px;
+        }
+
+        .button { background-color: #1c87c9; 
+            border: none;
+            color: white;
+            padding: 20px 34px; 
+            text-align: center;
+            text-decoration: none;
+            display:inline-block; 
+            font-size: 20px;
+            margin: 4px 2px;
+            cursor: pointer; 
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <a href="ticketmaster.html" class="button">Ticketmaster</a>
+    
     <h2>FREE SeatGeek Ticket Generator</h2>
     <p>This does not change the barcode and therfore cannot be scanned seccessfully.
         Complete this form below then copy the bookmark code and then create a bookmark in the safari app of this webpage and call it ticket editor, 
@@ -195,6 +209,7 @@ javascript:(function(){
                 el.innerText = 'Default Value';
         }
     });
+    console.log(elements500)
 
     var ticketCount = ${ticketCount}; 
     for (var i = 0; i < ticketCount; i++) {
