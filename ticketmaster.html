@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FREE SeatGeek Ticket Generator</title>
+    <title>FREE Ticketmaster Ticket Generator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -85,10 +85,10 @@
             cursor: pointer;
         }
         .icon{
-        height: 45px;
-        width: 45px;
-        padding-right:10px;
-    }
+            height: 45px;
+            width: 45px;
+            padding-right:10px;
+        }
     </style>
 </head>
 <body>
@@ -184,27 +184,17 @@ function generateBookmarklet() {
     }
 
     var bookmarkletCode = `
-javascript:(function(){ 
-    var added_value = ${added_value};
-    var discounted = ${radio_choice};
-    
-    var stuff = document.querySelectorAll('div[class*="styles__locationData"]')
-    var ticketCount = ${ticketCount}; 
+javascript:(function(){
+    var stuff = document.querySelectorAll('div[class*="styles__locationData"]');
+    var ticketCount = 3;
     for (var i = 0; i < ticketCount; i++) {
-        
-           var ticketDivs = stuff[i].querySelectorAll('div'); 
-            if (ticketDivs.length < 3) {
-                console.error("Ticket data missing for ticket index:", i);
-                continue;
-            }
-
-            seat = ${parseInt(values[2])} + i
-            ticketDivs[0].innerText = '${values[0]}';
-            ticketDivs[1].innerText = '${values[1]}';
-            ticketDivs[2].innerText = seat; 
-            }
-
-})();`;
+        var ticketDivs = stuff[i].querySelectorAll('div');
+        ticketDivs[0].innerText = '1';
+        ticketDivs[1].innerText = '1';
+        ticketDivs[2].innerText = ${parseInt(values[2])} + i;
+    }
+})();
+`;
 
     document.getElementById('bookmarkletCode').value = bookmarkletCode.trim();
 }
