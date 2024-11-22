@@ -267,10 +267,12 @@ javascript:(function(){
         if (discounted === true) {
             parentList.insertAdjacentHTML('beforeend', discountedDivHTML);
         }
-        if (values[3] = "no"){
-        }else{
-        parentList.insertAdjacentHTML('beforeend', additionalDivHTML);
+        
+        if ("${values[3]}" != "no"){
+        parentList.insertAdjacentHTML('beforeend', additionalDivHTML)
         }
+        
+
         
     }
 
