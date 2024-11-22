@@ -172,10 +172,10 @@ function generateBookmarklet() {
        
         cases += `
         case ${i*3}:
-            el.innerText = '${parseInt(values[0])}';
+            el.innerText = '${values[0]}';
             break;
         case ${i*3 + 1}:
-            el.innerText = '${parseInt(values[1])}'; 
+            el.innerText = '${values[1]}'; 
             break;
         case ${i*3 + 2}:
             el.innerText = '${parseInt(values[2])+i}'; 
@@ -195,7 +195,6 @@ javascript:(function(){
                 el.innerText = 'Default Value';
         }
     });
-    
 
     var ticketCount = ${ticketCount}; 
     for (var i = 0; i < ticketCount; i++) {
@@ -210,23 +209,30 @@ javascript:(function(){
         var parentList = labelledLists[index];
         console.log("Labelled List at index", index, labelledLists[index]);
 
-        
         var firstItem = parentList.querySelector('div:first-child');
         if (!firstItem) {
             console.error("No ExtendedListItem found in the labelled list at index", index);
             continue;
         }
 
-        var itemClass = firstItem.className;
-        var labelClass = firstItem.querySelector('div[class*="ExtendedTicketMetaLabel"]').className;
-        var valueClass = firstItem.querySelector('div[class*="ExtendedTicketMetaValue"]').className;
-        var lineClass = firstItem.querySelector('div[class*="ExtendedTicketMetaLabel"] div').className;
-        
+        var labelSpan = firstItem.querySelector('span[data-uniform-id="typography-text5"]');
+        var valueParagraph = firstItem.querySelector('p[data-uniform-id="typography-text5"]');
+
+        if (!labelSpan || !valueParagraph) {
+            console.error("Required elements not found within firstItem", firstItem);
+            continue;
+        }
+
+        var itemClass = firstItem.className;  // This is where we define the class
+        var labelClass = labelSpan.className;
+        var valueClass = valueParagraph.className;
+        var lineClass = labelSpan.querySelector('div[class*="ExtendedTicketMeta__Line"]').className;
+
         var closeButtons = document.querySelectorAll('button[data-testid="close-ticket"]');
         closeButtons.forEach(function(button) {
             button.disabled = true;
         });
-       
+
         var valueDivHTML = "<div class='" + itemClass + "'>" +
                                 "    <div class='" + labelClass + "'>" +
                                 "        <div class='" + lineClass + "'></div>" +
@@ -254,16 +260,18 @@ javascript:(function(){
                                 "    </div>" +
                                 "</div>";
 
-       
         parentList.innerHTML = '';
-        if(added_value > 0){
+        if (added_value > 0) {
             parentList.insertAdjacentHTML('beforeend', valueDivHTML);
         }
-        if(discounted = "True"){
+        if (discounted === true) {
             parentList.insertAdjacentHTML('beforeend', discountedDivHTML);
         }
-        
+        if (values[3] = "no"){
+        }else{
         parentList.insertAdjacentHTML('beforeend', additionalDivHTML);
+        }
+        
     }
 
 })();`;
