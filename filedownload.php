@@ -15,7 +15,7 @@
 // Specify the location of the downloadable file 
 //    (location relative to the document root directory).
 
-$LocationOfDownloadableFile = "https://hotfalcon.net/download/downloads/OP_Piglin_Barter.mcpack";
+$LocationOfDownloadableFile = "/download/downloads/OP_Piglin_Barter.mcpack";
 
 
 // Place 2:
@@ -24,7 +24,7 @@ $LocationOfDownloadableFile = "https://hotfalcon.net/download/downloads/OP_Pigli
 //    browser will decide whether to download or 
 //    load into current browser window.)
 
-$ForceFileDownload = "no";
+$ForceFileDownload = "yes";
 
 
 // Place 3:

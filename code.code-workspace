@@ -4,16 +4,10 @@
 			"path": "."
 		},
 		{
-			"path": "..\\..\\AppData\\Local\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang\\development_behavior_packs"
+			"path": "..\\..\\..\\AppData\\Local\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang.default\\development_behavior_packs"
 		},
 		{
-			"path": "..\\..\\AppData\\Local\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang\\development_resource_packs"
-		},
-		{
-			"path": "..\\..\\AppData\\Local\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang\\behavior_packs"
-		},
-		{
-			"path": "..\\..\\AppData\\Local\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang\\resource_packs"
+			"path": "..\\..\\..\\AppData\\Local\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang.default\\development_resource_packs"
 		}
 	],
 	"settings": {}

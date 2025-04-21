@@ -12,6 +12,19 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Generate better seats for sports events using the free SeatGeek Ticket Generator. Improve your experience by switching to premium seats for your favorite games.">
+    <meta name="keywords" content="SeatGeek, Ticket Generator, Free Ticket Generator, Sports Tickets, Better Seats, Premium Tickets, Game Tickets, Braves, Atlanta Braves Tickets, Atlanta Braves, MLB, Free Tickets, Ticket Changer">
+    <meta name="author" content="Hot Falcon">
+    <meta name="robots" content="index, follow">
+    <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <title>FREE SeatGeek Ticket Generator</title>
+
+    <!-- Open Graph tags for better sharing on social media -->
+    <meta property="og:title" content="FREE SeatGeek Ticket Generator">
+    <meta property="og:description" content="Generate better tickets with premium seats for your next sports game using the free SeatGeek Ticket Generator.">
+    <meta property="og:image" content="URL_to_your_image.jpg">
+    <meta property="og:url" content="https://hotfalcon.net/ticketgen.html">
+    <meta property="og:type" content="website">
     <title>FREE SeatGeek Ticket Generator</title>
     <style>
         body {
@@ -110,6 +123,12 @@
             margin: 4px 2px;
             cursor: pointer; 
         }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -124,6 +143,10 @@
          bookmark code, then save it. Next, open Seatgeek on safari, open the tickets to where you see the section and all the other details,
          then open the bookmark called ticket editor and see that the tickets are different.
     </p>
+    <img id="preview" src="images/tickets/before after.png" alt="Before and After" />
+    <dialog id="fullscreenImg">
+        <img src="images/tickets/before after.png" style="max-width: 100%; max-height: 100vh;">
+    </dialog>
     <a href="https://img.mlbstatic.com/mlb-images/image/upload/q_auto/mlb/nnxfivmguyee8tmcvf2b" target="_blank">Braves Seating Chart</a> 
     <p>Enter the number of tickets:</p>
     <input type="text" id="ticketCount" placeholder="Number of Tickets">
@@ -150,6 +173,18 @@
 </div>
 
 <script>
+
+
+
+const preview = document.getElementById('preview');
+const dialog = document.getElementById('fullscreenImg');
+
+preview.onclick = () => dialog.showModal();
+dialog.onclick = () => dialog.close();
+
+
+
+
 var added_value = 0
 var slider = document.getElementById("myRange");
 var output = document.getElementById("demo");
