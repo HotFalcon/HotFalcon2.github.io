@@ -171,9 +171,23 @@
             document.body.removeChild(tempTextarea);
         }
 
-        function showBookmarkInstructions() {
-            document.getElementById("bookmarkInstructions").style.display = "block";
-        }
+         async function showBookmarkInstructions() {
+            if (!navigator.share) {
+                alert("Bookmarking is not supported in this browser. Please use the manual method.");
+                return;
+            }
+
+            const instructions = document.getElementById("bookmarkInstructions");
+            instructions.style.display = "block";
+            instructions.innerHTML = "<p>Click the 'Share' button to bookmark this page.</p>";
+            const shareData = {
+                title: "Ticket Editor",
+                text: "Click to bookmark this page.",
+                url: window.location.href,
+            };
+            
+         }
+
 
         function generateSeatGeekCode() {
             const ticketCount = parseInt(document.getElementById("numSeats").value) || 1;
