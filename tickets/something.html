@@ -36,9 +36,10 @@
         input, select, textarea, button { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; }
         button { background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
         button:hover { background: #0056b3; }
-        #saveBookmarkButton { background: #28a745; display: none; }
-        #saveBookmarkButton:hover { background: #218838; }
+        #createBookmarkButton { background: #28a745; display: none; }
+        #createBookmarkButton:hover { background: #218838; }
         #bookmarkInstructions { display: none; margin-top: 10px; }
+        .highlight { color: #28a745; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -52,7 +53,7 @@
             <li>You must buy real tickets before you use this.</li>
             <li>This does not change the barcode, so the ticket can't be scanned.</li>
             <li>Fill out the form below and generate a bookmarklet.</li>
-            <li>Click "Save Bookmark" and follow instructions to save it in Safari.</li>
+            <li>Click "Create Bookmark" to save a placeholder, then edit it with the copied code.</li>
             <li>Open SeatGeek.com or Ticketmaster.com in Safari.</li>
             <li>Go to your tickets (where you see section, row, seat, etc.).</li>
             <li>Tap the <strong>Ticket Editor</strong> bookmark.</li>
@@ -104,16 +105,16 @@
 
         <div id="bookmarkletGenerator">
             <h3>Create Bookmark</h3>
-            <p>After generating a bookmarklet, click below to save it as a Safari bookmark.</p>
-            <button id="saveBookmarkButton" onclick="showBookmarkInstructions()">Save Bookmark</button>
+            <p>After generating a bookmarklet, click below to create a placeholder bookmark, then edit it.</p>
+            <button id="createBookmarkButton" onclick="createPlaceholderBookmark()">Create Bookmark</button>
             <div id="bookmarkInstructions">
-                <p><strong>Steps to Save:</strong></p>
+                <p><strong>Steps to Save Bookmarklet:</strong></p>
                 <ol>
                     <li>The bookmarklet code has been copied to your clipboard.</li>
-                    <li>Tap the <strong>Share icon</strong> (box with arrow) in Safari's toolbar.</li>
-                    <li>Select <strong>Add Bookmark</strong>.</li>
-                    <li>Name it "Ticket Editor" and tap <strong>Save</strong>.</li>
-                    <li>Edit the bookmark, paste the copied code into the URL field, and save.</li>
+                    <li>Tap the <span class="highlight">Share icon</span> (⬆️) in Safari's toolbar and select <strong>Add Bookmark</strong>.</li>
+                    <li>Name it "Ticket Editor" and tap <strong>Save</strong> to create the placeholder.</li>
+                    <li>Tap the <span class="highlight">Book icon</span> (📖) in Safari's toolbar to open Bookmarks.</li>
+                    <li>Find "Ticket Editor," tap <strong>Edit</strong>, paste the copied code into the URL field, and tap <strong>Done</strong>.</li>
                 </ol>
             </div>
         </div>
@@ -130,7 +131,7 @@
             const val = document.getElementById("platformSelect").value;
             document.getElementById("seatgeekForm").style.display = val === "seatgeek" ? "block" : "none";
             document.getElementById("ticketmasterForm").style.display = val === "ticketmaster" ? "block" : "none";
-            document.getElementById("saveBookmarkButton").style.display = "none";
+            document.getElementById("createBookmarkButton").style.display = "none";
             document.getElementById("bookmarkInstructions").style.display = "none";
         }
 
@@ -143,7 +144,7 @@
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(code)
                     .then(() => {
-                        alert("Bookmarklet code copied to clipboard! Click 'Save Bookmark' to proceed.");
+                        alert("Bookmarklet code copied! Click 'Create Bookmark' to proceed.");
                     })
                     .catch(err => {
                         console.error("Clipboard API failed:", err);
@@ -163,7 +164,7 @@
             tempTextarea.select();
             try {
                 document.execCommand("copy");
-                alert("Bookmarklet code copied to clipboard! Click 'Save Bookmark' to proceed.");
+                alert("Bookmarklet code copied! Click 'Create Bookmark' to proceed.");
             } catch (err) {
                 console.error("Fallback copy failed:", err);
                 alert("Failed to copy. Please select and copy the code from the textarea.");
@@ -171,23 +172,23 @@
             document.body.removeChild(tempTextarea);
         }
 
-         async function showBookmarkInstructions() {
-            if (!navigator.share) {
-                alert("Bookmarking is not supported in this browser. Please use the manual method.");
-                return;
+        function createPlaceholderBookmark() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Ticket Editor',
+                    url: 'https://hotfalcon.net/tickets'
+                }).then(() => {
+                    document.getElementById("bookmarkInstructions").style.display = "block";
+                }).catch(err => {
+                    console.error("Share API failed:", err);
+                    alert("Failed to share. Manually tap the Share icon (⬆️) and select Add Bookmark.");
+                    document.getElementById("bookmarkInstructions").style.display = "block";
+                });
+            } else {
+                alert("Share API not supported. Manually tap the Share icon (⬆️) and select Add Bookmark.");
+                document.getElementById("bookmarkInstructions").style.display = "block";
             }
-
-            const instructions = document.getElementById("bookmarkInstructions");
-            instructions.style.display = "block";
-            instructions.innerHTML = "<p>Click the 'Share' button to bookmark this page.</p>";
-            const shareData = {
-                title: "Ticket Editor",
-                text: "Click to bookmark this page.",
-                url: window.location.href,
-            };
-            
-         }
-
+        }
 
         function generateSeatGeekCode() {
             const ticketCount = parseInt(document.getElementById("numSeats").value) || 1;
@@ -305,7 +306,7 @@
 
             document.getElementById("seatgeekOutput").value = bookmarkletCode;
             copyBookmarkletCode(bookmarkletCode);
-            document.getElementById("saveBookmarkButton").style.display = "block";
+            document.getElementById("createBookmarkButton").style.display = "block";
         }
 
         function generateTicketmasterCode() {
@@ -326,7 +327,7 @@
 
             document.getElementById("ticketmasterOutput").value = code;
             copyBookmarkletCode(code);
-            document.getElementById("saveBookmarkButton").style.display = "block";
+            document.getElementById("createBookmarkButton").style.display = "block";
         }
 
         function copyToClipboard() {
