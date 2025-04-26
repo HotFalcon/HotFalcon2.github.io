@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bookmarklet Generator</title>
+</head>
+<body>
+    <textarea id="code" rows="5" style="width:100%"></textarea>
+    <button onclick="generate()">Create Bookmarklet</button>
+    <a id="bookmarklet" href="#">Bookmark this link</a>
+    <script>
+        function generate() {
+            let code = document.getElementById("code").value;
+            let bookmarklet = `javascript:(function(){${code}})()`;
+            document.getElementById("bookmarklet").href = bookmarklet;
+            document.getElementById("bookmarklet").textContent = "Bookmark this link";
+        }
+    </script>
+</body>
+</html>
