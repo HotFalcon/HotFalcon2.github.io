@@ -9,6 +9,7 @@
         gtag('js', new Date());
         gtag('config', 'G-DJJ7VQE2K8');
     </script>
+    <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Fake your ticket details to make it look like you have better seats! Change SeatGeek or Ticketmaster tickets to show front row sections, premium seats, and more. Works with Safari bookmarklets.">
@@ -19,7 +20,7 @@
     <link rel="canonical" href="https://hotfalcon.net/tickets/index.html">
     <title>Fake Better Tickets - SeatGeek and Ticketmaster Editor</title>
 
-    <!-- Open Graph tags for better sharing on social media -->
+    <!-- Open Graph tags -->
     <meta property="og:title" content="Fake Better Tickets - SeatGeek and Ticketmaster Editor">
     <meta property="og:description" content="Change section, row, and seat numbers to make your tickets look better. Works with SeatGeek and Ticketmaster using bookmarklets.">
     <meta property="og:image" content="URL_to_your_image.jpg">
@@ -44,33 +45,32 @@
     </script>
 </head>
 <body>
-
     <div class="container">
-        <h2> Seatgeek and Ticketmaster Ticket Generator</h2>
+        <h2>SeatGeek and Ticketmaster Ticket Generator</h2>
         <img id="preview" src="before after.png" alt="Before and After" />
         <dialog id="fullscreenImg">
             <img src="before after.png" style="max-width: 100%; max-height: 100vh;">
         </dialog>
-    <ul>
-        <li>You must buy real tickets before you use this</li>
-        <li>This does not change the barcode, so the ticket can't be scanned.</li>
-        <li>Fill out the form below.</li>
-        <li>Copy the bookmark code that appears.</li>
-        <li>In Safari, create a bookmark for this page and name it <strong>Ticket Editor</strong>.</li>
-        <li>Edit the new bookmark:</li>
         <ul>
-          <li>Delete the current URL.</li>
-          <li>Paste in the bookmark code.</li>
-          <li>Save it.</li>
+            <li>You must buy real tickets before you use this</li>
+            <li>This does not change the barcode, so the ticket can't be scanned.</li>
+            <li>Fill out the form below.</li>
+            <li>Copy the bookmark code that appears.</li>
+            <li>In Safari, create a bookmark for this page and name it <strong>Ticket Editor</strong>.</li>
+            <li>Edit the new bookmark:</li>
+            <ul>
+                <li>Delete the current URL.</li>
+                <li>Paste in the bookmark code.</li>
+                <li>Save it.</li>
+            </ul>
+            <li>Open SeatGeek.com in Safari.</li>
+            <li>Go to your tickets (where you see section, row, seat, etc.).</li>
+            <li>Tap the <strong>Ticket Editor</strong> bookmark.</li>
+            <li>The ticket info will be changed.</li>
         </ul>
-        <li>Open SeatGeek.com in Safari.</li>
-        <li>Go to your tickets (where you see section, row, seat, etc.).</li>
-        <li>Tap the <strong>Ticket Editor</strong> bookmark.</li>
-        <li>The ticket info will be changed.</li>
-      </ul>
     
-    <p><strong>Enter the details of an empty seat you'd like to move to.</strong></p>
-    <p>You can find available seats by checking unsold tickets on sites like SeatGeek, Ticketmaster, etc.</p>
+        <p><strong>Enter the details of an empty seat you'd like to move to.</strong></p>
+        <p>You can find available seats by checking unsold tickets on sites like SeatGeek, Ticketmaster, etc.</p>
 
         <label for="platformSelect">Choose Platform:</label>
         <select id="platformSelect" onchange="togglePlatform()">
@@ -95,9 +95,9 @@
             <label> Season Tickets? </label>
             <form class="form-inline" id="radiobtns">
                 <label> Yes: </label>
-                <input type="radio" name="icon">
+                <input type="radio" name="icon" value="yes">
                 <label> No: </label>
-                <input type="radio" name="icon">
+                <input type="radio" name="icon" value="no">
             </form>
         </div>
 
@@ -114,7 +114,6 @@
     </div>
 
     <script>
-
         const preview = document.getElementById('preview');
         const dialog = document.getElementById('fullscreenImg');
 
@@ -132,31 +131,18 @@
             document.getElementById("bravesOnlyFields").style.display = isBraves ? "block" : "none";
         }
 
-        var radio_choice = false;
         function generateSeatGeekCode() {
-            var icons = document.querySelectorAll("[name='icon']");
-            for(var i=0; i < icons.length; i++){
-                if(icons[i].checked == true){
-                    radio_choice = true;
-                break;
-                } else {
-                    radio_choice = false;
-                break;
-                }
-            }//end icons
-
-            
-            const ticketCount = parseInt(document.getElementById("numSeats").value)
-            const section = document.getElementById("section").value;
-            const row = document.getElementById("row").value;
-            const seatNumber = parseInt(document.getElementById("seat").value);
-            const sectionTitle = document.getElementById("sectionTitle").value;
-            const addedValue = document.getElementById("addedValue").value;
+            const ticketCount = parseInt(document.getElementById("numSeats").value) || 1;
+            const section = document.getElementById("section").value || "";
+            const row = document.getElementById("row").value || "";
+            const seatNumber = parseInt(document.getElementById("seat").value) || 1;
+            const sectionTitle = document.getElementById("sectionTitle").value || "";
+            const addedValue = parseInt(document.getElementById("addedValue").value) || 0;
             const isBraves = document.getElementById("isBraves").checked;
+            const seasonTickets = document.querySelector('input[name="icon"]:checked')?.value === "yes";
 
-            var cases = '';
-            for (i = 0; i < ticketCount; i++) {
-                
+            let cases = '';
+            for (let i = 0; i < ticketCount; i++) {
                 cases += `
                 case ${i*3}:
                     el.innerText = '${section}';
@@ -170,59 +156,57 @@
                 `;
             }
 
-
-
-    let bookmarkletCode = `
-        javascript:(function(){ 
-            var added_value = ${addedValue};
-            var discounted = ${radio_choice};
-            var elements500 = document.querySelectorAll('p[data-uniform-id="typography-subtitle"]');
-            elements500.forEach(function(el, index) {
-                switch(index) {
-                    ${cases}
-                    default:
-                        el.innerText = 'Default Value';
-                }
-            });
-
-            var ticketCount = ${ticketCount};
-            for (var i = 0; i < ticketCount; i++) {
-                var index = 8 + (i * 9); 
-                var labelledLists = document.querySelectorAll('div[class*="LabelledList"]');
-                
-                if (labelledLists.length <= index) {
-                    console.error("LabelledList not found for index:", index);
-                    continue;
-                }
-
-                var parentList = labelledLists[index];
-                console.log("Labelled List at index", index, labelledLists[index]);
-
-                var firstItem = parentList.querySelector('div:first-child');
-                if (!firstItem) {
-                    console.error("No ExtendedListItem found in the labelled list at index", index);
-                    continue;
-                }
-
-                var labelSpan = firstItem.querySelector('span[data-uniform-id="typography-text5"]');
-                var valueParagraph = firstItem.querySelector('p[data-uniform-id="typography-text5"]');
-
-                if (!labelSpan || !valueParagraph) {
-                    console.error("Required elements not found within firstItem", firstItem);
-                    continue;
-                }
-
-                var itemClass = firstItem.className; 
-                var labelClass = labelSpan.className;
-                var valueClass = valueParagraph.className;
-                var lineClass = labelSpan.querySelector('div[class*="ExtendedTicketMeta__Line"]').className;
-
-                var closeButtons = document.querySelectorAll('button[data-testid="close-ticket"]');
-                closeButtons.forEach(function(button) {
-                    button.disabled = true;
+            let bookmarkletCode = `
+            javascript:(function(){ 
+                let added_value = ${addedValue};
+                let discounted = ${seasonTickets};
+                let elements500 = document.querySelectorAll('p[data-uniform-id="typography-subtitle"]');
+                elements500.forEach(function(el, index) {
+                    switch(index) {
+                        ${cases}
+                        default:
+                            el.innerText = 'Default Value';
+                    }
                 });
 
-                var valueDivHTML = "<div class='" + itemClass + "'>" +
+                let ticketCount = ${ticketCount};
+                for (let i = 0; i < ticketCount; i++) {
+                    let index = 8 + (i * 9); 
+                    let labelledLists = document.querySelectorAll('div[class*="LabelledList"]');
+                    
+                    if (labelledLists.length <= index) {
+                        console.error("LabelledList not found for index:", index);
+                        continue;
+                    }
+
+                    let parentList = labelledLists[index];
+                    console.log("Labelled List at index", index, labelledLists[index]);
+
+                    let firstItem = parentList.querySelector('div:first-child');
+                    if (!firstItem) {
+                        console.error("No ExtendedListItem found in the labelled list at index", index);
+                        continue;
+                    }
+
+                    let labelSpan = firstItem.querySelector('span[data-uniform-id="typography-text5"]');
+                    let valueParagraph = firstItem.querySelector('p[data-uniform-id="typography-text5"]');
+
+                    if (!labelSpan || !valueParagraph) {
+                        console.error("Required elements not found within firstItem", firstItem);
+                        continue;
+                    }
+
+                    let itemClass = firstItem.className; 
+                    let labelClass = labelSpan.className;
+                    let valueClass = valueParagraph.className;
+                    let lineClass = labelSpan.querySelector('div[class*="ExtendedTicketMeta__Line"]').className;
+
+                    let closeButtons = document.querySelectorAll('button[data-testid="close-ticket"]');
+                    closeButtons.forEach(function(button) {
+                        button.disabled = true;
+                    });
+
+                    let valueDivHTML = "<div class='" + itemClass + "'>" +
                                         "    <div class='" + labelClass + "'>" +
                                         "        <div class='" + lineClass + "'></div>" +
                                         "    </div>" +
@@ -231,7 +215,7 @@
                                         "    </div>" +
                                         "</div>";
 
-                var discountedDivHTML = "<div class='" + itemClass + "'>" +
+                    let discountedDivHTML = "<div class='" + itemClass + "'>" +
                                         "    <div class='" + labelClass + "'>" +
                                         "        <div class='" + lineClass + "'></div>" +
                                         "    </div>" +
@@ -240,7 +224,7 @@
                                         "    </div>" +
                                         "</div>";
 
-                var additionalDivHTML = "<div class='" + itemClass + "'>" +
+                    let additionalDivHTML = "<div class='" + itemClass + "'>" +
                                         "    <div class='" + labelClass + "'>" +
                                         "        <div class='" + lineClass + "'></div>" +
                                         "    </div>" +
@@ -249,64 +233,87 @@
                                         "    </div>" +
                                         "</div>";
 
-                parentList.innerHTML = '';
-                if (added_value > 0) {
-                    parentList.insertAdjacentHTML('beforeend', valueDivHTML);
+                    parentList.innerHTML = '';
+                    if (added_value > 0) {
+                        parentList.insertAdjacentHTML('beforeend', valueDivHTML);
+                    }
+                    if (discounted) {
+                        parentList.insertAdjacentHTML('beforeend', discountedDivHTML);
+                    }
+                    
+                    if ("${sectionTitle}") {
+                        parentList.insertAdjacentHTML('beforeend', additionalDivHTML);
+                    }
                 }
-                if (discounted === true) {
-                    parentList.insertAdjacentHTML('beforeend', discountedDivHTML);
-                }
-                
-                if ("${sectionTitle}" != ""){
-                parentList.insertAdjacentHTML('beforeend', additionalDivHTML)
-                }
-                
-
-                
-            }
-
-        })();`;
+            })();`;
 
             document.getElementById("seatgeekOutput").value = bookmarkletCode;
         }
 
         function generateTicketmasterCode() {
-            var icons = document.querySelectorAll("[name='icon']");
-            for(var i=0; i < icons.length; i++){
-                if(icons[i].checked == true){
-                    radio_choice = true;
-                break;
-                } else {
-                    radio_choice = false;
-                break;
-                }
-            }//end icons
-            const section = document.getElementById("section").value;
-            const row = document.getElementById("row").value;
-            const seat = document.getElementById("seat").value;
+            const section = document.getElementById("section").value || "";
+            const row = document.getElementById("row").value || "";
+            const seat = parseInt(document.getElementById("seat").value) || 1;
 
             let code = `javascript:(function(){\n`;
-            code += `var stuff = document.querySelectorAll('div[class*="styles__locationData"]');\n`;
-            code += `for (var i = 0; i < stuff.length; i++) {\n`;
-            code += `  var ticketDivs = stuff[i].querySelectorAll('div');\n`;
+            code += `let stuff = document.querySelectorAll('div[class*="styles__locationData"]');\n`;
+            code += `for (let i = 0; i < stuff.length; i++) {\n`;
+            code += `  let ticketDivs = stuff[i].querySelectorAll('div');\n`;
             code += `  if (ticketDivs.length >= 3) {\n`;
             code += `    ticketDivs[0].innerText = '${section}';\n`;
             code += `    ticketDivs[1].innerText = '${row}';\n`;
-            code += `    ticketDivs[2].innerText = ${parseInt(seat)} + i;\n`;
+            code += `    ticketDivs[2].innerText = ${seat} + i;\n`;
             code += `  }\n}`;
             code += `})();`;
             document.getElementById("ticketmasterOutput").value = code;
         }
 
-
         function copyToClipboard() {
-            var copyText = document.getElementById("bookmarkletCode");
-            copyText.select();
-            copyText.setSelectionRange(0, 99999); // For mobile devices
+            const platform = document.getElementById("platformSelect").value;
+            const textareaId = platform === "seatgeek" ? "seatgeekOutput" : "ticketmasterOutput";
+            const copyText = document.getElementById(textareaId).value;
 
-            document.execCommand("copy");
+            if (!copyText) {
+                alert("No bookmarklet code to copy! Please generate a bookmarklet first.");
+                return;
+            }
 
-            alert("Bookmarklet code copied to clipboard!");
+            // Modern Clipboard API
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(copyText)
+                    .then(() => {
+                        alert("Bookmarklet code copied to clipboard!");
+                    })
+                    .catch(err => {
+                        console.error("Clipboard API failed:", err);
+                        fallbackCopy(copyText);
+                    });
+            } else {
+                // Fallback for older browsers or non-HTTPS
+                fallbackCopy(copyText);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const tempTextarea = document.createElement("textarea");
+            tempTextarea.value = text;
+            tempTextarea.style.position = "fixed";
+            tempTextarea.style.opacity = "0";
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            try {
+                document.execCommand("copy");
+                alert("Bookmarklet code copied to clipboard!");
+            } catch (err) {
+                console.error("Fallback copy failed:", err);
+                alert("Failed to copy. Please manually select and copy the code.");
+            }
+            document.body.removeChild(tempTextarea);
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(() => console.log('Service Worker Registered'));
         }
     </script>
 </body>
