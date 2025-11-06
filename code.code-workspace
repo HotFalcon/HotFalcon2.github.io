@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "..\\..\\..\\AppData\\Local\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang.default\\development_behavior_packs"
+		},
+		{
+			"path": "..\\..\\..\\AppData\\Local\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang.default\\development_resource_packs"
+		}
+	],
+	"settings": {
+		"github.copilot.enable": {
+			"*": false,
+			"plaintext": false,
+			"markdown": false,
+			"scminput": false
+		},
+		"terminal.integrated.env.windows": {
+			"PATH": "C:\\Program Files\\Git\\cmd;${env:PATH}"
+		}
+	}
+}

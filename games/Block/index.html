@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script data-ad-client="ca-pub-3517828409778918" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<title> Menu </title>
+<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+<script>
+function start(){
+    sjs.open("target",1500,700);
+
+var bedrock = new sjs.Image("images/bedrock.png");
+bedrock.type = "bedrock";
+bedrock.setSize(50,50);
+bedrock.center();
+bedrock.friction=-0.001;
+bedrock.pushUp(3);
+bedrock.pushRight(4);
+bedrock.bounce();
+
+var menu_text = new sjs.Text("MENU",28,"blue");
+menu_text.centerH();
+
+var game_text = new sjs.Text("Testing a block game",28,"#ff0");
+game_text.centerH().offset(0, 30);
+
+var startBtn = new sjs.Button("Start", function(){
+window.location = "block.html";
+});
+
+startBtn.center();
+
+var info_text = new sjs.Text("Created By HotFalcon",20,"black");
+
+info_text.bottom().centerH();
+
+} //end start
+
+</script>
+</head>
+<p></p>
+<body onload="start()"  onload="start()" style="margin:auto;background:rgba(44, 190, 68, 0.336);">
+
+<div id="target" style="margin:auto;background:#b9e6162c;"></div>
+</body>
+</html>

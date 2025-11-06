@@ -1,0 +1,116 @@
+<html>
+<head>
+    <script data-ad-client="ca-pub-3517828409778918" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<title>Pong</title>
+<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"> </script>
+<script>
+function start(){
+sjs.open("target",550,450);
+
+
+var bruh = new Audio('Music/bruh.mp3');
+sjs.keyDown(B_KEY,function(){
+bruh.play();
+});
+
+var oof = new Audio('Music/oof.mp3');
+sjs.keyDown(O_KEY,function(){
+oof.play();
+});
+
+//Background
+var background = new sjs.Image("Images/space5.png");
+background.setSize(sjs.getWidth(), sjs.getHeight());
+
+
+//Ball Object & Properties
+var ball = new sjs.Image("Images/pizza.png");
+ball.type = "ball";
+ball.setSize(50,50);
+ball.center();
+ball.friction=-0.001;
+ball.pushUp(3);
+ball.pushRight(3);
+ball.bounce();
+
+//Paddle 1
+var paddle1 = new sjs.Image("Images/paddle.png");
+paddle1.type="paddle"
+paddle1.centerH();
+paddle1.setSize(100,20);
+
+//Paddle 2
+var paddle2 = new sjs.Image("Images/paddle2.png");
+paddle2.type="paddle"
+paddle2.center().bottom();
+paddle2.setSize(100,20)
+sjs.keyDown(LEFT_KEY, function(){
+paddle1.pushLeft();
+paddle2.pushLeft();
+});
+
+sjs.keyDown(RIGHT_KEY, function(){
+paddle1.pushRight();
+paddle2.pushRight();
+});
+
+sjs.keyDown(W_KEY, function(){
+paddle1.moveTo();
+paddle2.moveTo(ball.getX(), (paddle2.getY()));
+});
+
+
+//Sounds
+
+sjs.onHit("ball","paddle", function(ball,paddle){
+score = score + 1;
+score_txt.setText("Score: "+score);
+if(score == 5){
+var newball = new sjs.Image("Images/spike.png");
+newball.type = "newball";
+newball.setSize(50,50);
+newball.center();
+newball.friction = 0;
+newball.bounce();
+newball.pushLeft(3);
+newball.pushUp(4);
+
+sjs.onHit("newball",["top_screen","bottom_screen"], function(){
+window.location = "gameover";
+});
+}
+oof.play();
+sjs.bounceOff(ball,paddle);
+});
+
+sjs.onHit("newball","paddle", function(newball,paddle){
+score = score + 1;
+score_txt.setText("Score: "+score);
+sjs.bounceOff(newball,paddle);
+});
+
+sjs.onHit("newball","ball", function(newball,ball){
+sjs.bounceOff(newball,ball);
+});
+
+sjs.onHit("ball",["top_screen","bottom_screen"], function(){
+window.location = "gameover";
+localStorage.setItem("score", score);
+});
+
+//Score
+var score=0;
+var score_txt = new sjs.Text("Score: 0", 21, "orange");
+}
+
+//end start
+</script>
+</head>
+<body onload="start()" style="margin:auto;background:lightgreen;">
+<h1> Pong </h1>
+<div id="target" style="margin:auto;background:grey;"></div>
+<br/>
+<div id="output" style="margin:0 50 0 50;"></div>
+<br/><br/>
+</body>
+</html>

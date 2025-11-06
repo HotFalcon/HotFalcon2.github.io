@@ -1,0 +1,74 @@
+if(&timer="glowstone");
+    log(now);
+        wait(900ms);
+        GETSLOT("stained_hardened_clay",#one,9);
+        log(%#one%);
+        wait(800ms)
+        GETSLOT("stained_hardened_clay",#two,9);
+        log(%#two%)
+        log(sec);
+        if(%#two%>1);log(%#two%);wait(800ms);GETSLOT("stained_hardened_clay",#three,9);
+            if(%#three%>1);log(%#three%);wait(800ms);GETSLOT("stained_hardened_clay",#four,9);
+            if(%#four%>1);log(%#three%);wait(800ms);GETSLOT("stained_hardened_clay",#five,9);
+            if(%#five%>1);log(%#three%);wait(800ms);GETSLOT("stained_hardened_clay",#six,9);
+            if(%#six%>1);log(%#three%);wait(800ms);GETSLOT("stained_hardened_clay",#seven,9);
+            if(%#seven%>1);log(%#three%);wait(800ms);GETSLOT("stained_hardened_clay",#eight,9);
+            if(%#eight%>1);log(%#three%);wait(800ms);GETSLOT("stained_hardened_clay",#nine,9);
+            if(%#nine%>1);log(%#three%);wait(800ms);GETSLOT("stained_hardened_clay",#ten,9);
+            if(%#ten%>1);log(%#three%);wait(800ms);GETSLOT("stained_hardened_clay",#eleven,9);
+            if(%#eleven%>1);log(%#three%);wait(800ms);GETSLOT("stained_hardened_clay",#twelve,9);
+            if(%#twelve%>1);log(%#three%);wait(800ms);GETSLOT("stained_hardened_clay",#thirteen,9);
+            if(%#thirteen%>1);log(%#three%);wait(800ms);log(done);
+                    
+            endif                   
+            endif                   
+            endif                   
+            endif                    
+            endif                    
+            endif                    
+            endif                    
+            endif                    
+            endif                    
+            endif                    
+            endif
+        endif;
+endif
+
+
+
+
+
+
+
+if(&timer="clock");
+    log(clock);
+    SLOTCLICK(%#one%);
+    if(%#two% > 1);wait(500ms);SLOTCLICK(%#two%);
+    if(%#three% > 1);wait(500ms);SLOTCLICK(%#three%);
+    if(%#four% > 1);wait(500ms);SLOTCLICK(%#four%);
+    if(%#five% > 1);wait(500ms);SLOTCLICK(%#five%);    
+    if(%#six% > 1);wait(500ms);SLOTCLICK(%#six%);
+    if(%#seven% > 1);wait(500ms);SLOTCLICK(%#seven%);
+    if(%#eight% > 1);wait(500ms);SLOTCLICK(%#eight%);
+    if(%#nine% > 1);wait(500ms);SLOTCLICK(%#nine%);
+    if(%#ten% > 1);wait(500ms);SLOTCLICK(%#ten%);
+    if(%#eleven% > 1);wait(500ms);SLOTCLICK(%#eleven%);
+    if(%#twelve% > 1);wait(500ms);SLOTCLICK(%#twelve%);
+    if(%#thirteen% > 1);wait(500ms);SLOTCLICK(%#thirteen%);
+
+    endif
+    endif
+    endif
+    endif
+    endif
+    endif
+    endif
+    endif
+    endif
+    endif
+    endif
+    endif
+
+endif
+
+

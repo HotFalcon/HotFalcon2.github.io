@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tile Sliding Game</title>
+    <style>
+        canvas {
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="600" height="300"></canvas>
+    <button onclick="startSlide()">Slide Tiles</button>
+
+    <script>
+        var tileWidth = 60;
+        var tileHeight = tileWidth * 2;
+        var tileSpeed = 5; // Initial speed of the tiles
+        var extraTiles = 2; // Number of extra tiles to the right
+        var tiles = [];
+
+        // Function to generate a random color
+        function getRandomColor() {
+            var letters = "0123456789ABCDEF";
+            var color = "#";
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * letters.length)];
+            }
+            return color;
+        }
+
+        // Initialize tiles with random colors
+        function initializeTiles() {
+            tiles = [];
+            for (let i = 0; i < 8 + extraTiles; i++) {
+                var color = getRandomColor();
+                tiles.push({ x: i * tileWidth, y: 0, width: tileWidth, height: tileHeight, color: color });
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var canvas = document.getElementById("gameCanvas");
+            var ctx = canvas.getContext("2d");
+
+            function drawTiles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                tiles.forEach(tile => {
+                    ctx.fillStyle = tile.color; // Set the tile color
+                    ctx.fillRect(tile.x, tile.y, tile.width, tile.height);
+
+                    // Add a border around each tile
+                    ctx.strokeStyle = "#000";
+                    ctx.strokeRect(tile.x, tile.y, tile.width, tile.height);
+                });
+
+                // Check if there is space on the canvas, and if so, add new tiles to the right
+                if (tiles[tiles.length - 1].x + tileWidth < canvas.width) {
+                    var color = getRandomColor();
+                    tiles.push({ x: tiles[tiles.length - 1].x + tileWidth, y: 0, width: tileWidth, height: tileHeight, color: color });
+                }
+            }
+
+            function moveTiles() {
+                tiles.forEach(tile => {
+                    tile.x -= tileSpeed;
+                });
+
+                // Check if a new tile needs to come in from the left
+                if (tiles[0].x + tiles[0].width <= 0) {
+                    tiles.shift(); // Remove the leftmost tile
+                }
+            }
+
+            window.startSlide = function () {
+                var speedDecay = 0.1; // Rate at which the speed slows down over time
+
+                initializeTiles(); // Reset tiles
+
+                function update() {
+                    moveTiles();
+                    drawTiles();
+
+                    tileSpeed *= (1 - speedDecay); // Slow down the tiles over time
+
+                    if (tileSpeed > 0.1) {
+                        requestAnimationFrame(update);
+                    }
+                }
+
+                drawTiles(); // Draw initial tiles
+                requestAnimationFrame(update);
+            };
+
+            initializeTiles(); // Draw tiles when the page loads
+            drawTiles();
+        });
+    </script>
+</body>
+</html>

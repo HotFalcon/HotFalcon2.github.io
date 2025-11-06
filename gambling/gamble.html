@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="stylesheet.css">
+<style>
+    .button {
+      background-color: #00f49b;
+      border: none;
+      color: rgb(0, 190, 22);
+      
+      
+      text-decoration: none;
+      height: 50px;
+      width: 150px;
+      font-size: 24px;
+      margin: 4px 20px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition-duration: 0.4s;
+      float:left;
+      position: absolute;
+        top: 300px;
+        left: 5px;
+text-align: center;
+
+
+      
+    }
+
+    .button1 {
+      background-color: rgb(19, 193, 0); 
+      color: black; 
+      border: 2px solid #04aa23;
+    }
+
+    .button1:hover {
+      background-color: #02d729;
+      color: black;
+    }
+
+    .bet {
+  background-color:lightblue;
+  border:3px solid blue;
+  height:50px;
+  width:100px;
+  float:left;
+  margin:10px;
+
+  text-align:center;
+  position: absolute;
+  top: 120px;
+  left: 40px;
+  
+  }
+  
+  .button2{
+    background-color: #f40000;
+      border: none;
+      color: rgb(0, 0, 0);
+      
+      
+      text-decoration: none;
+      height: 50px;
+      width: 150px;
+      font-size: 24px;
+      margin: 4px 20px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition-duration: 0.4s;
+      float:left;
+      position: absolute;
+        top: 300px;
+        left: 1000px;
+text-align: center;
+  }
+
+#div1{
+  position: absolute;
+  top: 90px;
+  left: 50px;
+  font-size: 18px;
+}
+
+#div2{
+  position: absolute;
+  top: 188px;
+  left: 35px;
+  font-size: 18px;
+}
+
+#div3{
+  position: absolute;
+  top: 188px;
+  left: 1200px;
+  font-size: 18px;
+}
+
+#div4{
+  position: absolute;
+  top: 310px;
+  left: 1350px;
+  font-size: 18px;
+}
+
+
+.container_row{
+display: flex;
+
+}
+
+.multi{
+  background-color:lightblue;
+  border:3px solid blue;
+  height:50px;
+  width:100px;
+  float:left;
+  margin:10px;
+  text-align:center;
+  
+  position: absolute;
+  top: 220px;
+  left: 40px; 
+}
+
+.h2{
+    background-color:lightblue;
+    
+}
+
+.diamondp{
+  position: absolute;
+  top: 250px;
+  left: 1200px;
+}
+
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My Website</title>
+  </head>
+  <body onload="start()">
+    <audio id="myAudio">
+      <source src="click.wav" type="audio/wav">
+      Your browser does not support the audio element.
+    </audio>
+
+    <main>
+        <h1>Evans Gambles</h1>  
+    </main>
+    <h2>Limbo</h2>
+    <div id="div1">
+      <p></p>
+    </div>
+    <div id="div2">
+        <p></p>
+    </div>
+  </div>
+  <div id="div3">
+      <h1></h1>
+  </div>
+  <div id="div4">
+    <font size="+2"><h1 id="counterText"><span id="counterValue">100</span></h1></font>
+
+    </p>
+  </div>
+  <div id="div5">
+    <p></p>
+</div>
+    <p id="demo"></p>
+    <div class="container_row">
+      <canvas id="canvas" width="1000" height="800" class="canvasr"></canvas>
+      <button type="button" class="button button1" onclick="rand()" >Bet</button>
+      <button type="button" class="button2" onclick="restart()" >Restart</button>
+                  <input type="text" class="bet" id="bet" placeholder="Diamonds">
+                  <input type="text" class="multi" id="multi" placeholder="Mulitplier">
+                  <img class="diamondp" height="160" width="160" src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/a/ab/Diamond_JE3_BE3.png">
+                </div>
+	<script>
+    var localStorage = window.localStorage;
+  let counterValue = localStorage.getItem("counterValue");
+//console.log("loga")
+  if (counterValue === null || isNaN(counterValue)) {
+    counterValue = 100;
+    updateCounterText(counterValue);
+  } else {
+    updateCounterText(parseInt(counterValue, 10));
+  }
+    
+    console.log("counter: " + counterValue);
+var cooldown = false;
+var cheight = 600;
+var cwidth = 1100;
+var wait = 50;
+var totalStart = 100;
+var flips = 10;
+var effectFrequency = 5;
+//meaningless below
+var times = 0;
+
+
+function draw() {
+ const ctx = document.getElementById("canvas").getContext("2d");
+  
+      ctx.fillStyle = "#424549";
+      ctx.fillRect(200,0,cwidth,cheight);
+  }   
+  
+function rand(){
+
+  var bet = document.querySelector("#bet");
+
+  var multi = document.querySelector("#multi");
+
+
+  //console.log("multi: " + multi.value);
+
+
+
+
+
+//console.log("bet: " + bet.value);
+  if(cooldown == false){
+    if(bet.value != "" && bet.value*10%10 == 0){
+        if(multi.value != "" && multi.value*10%10 == 0){
+            bet.style.border = "2px solid green";
+            multi.style.border = "2px solid green";
+
+            cooldown = true;
+
+            if(Number.isInteger(bet.value) == false){
+              //console.log("false");
+            }
+
+            var multi = 1/(Math.random());
+            var flat = Math.round(multi*100)/100;
+            console.log(flat);
+            var inc = (Math.round(((flat-1))*100)/100/5);
+
+            for(var i = 1; i <= flips; i++){
+                //println("i: " + i);
+                    var num = inc*i*5/flips;
+                increase(i, num);
+            } 
+
+            var time = i *wait;
+  var numbered = Math.round((Math.round((num + 1)*100)/100)*10000)/10000;
+
+  setTimeout(() => {
+    
+    var num2 = numbered *10;
+    var num3 = num2 * 10;
+    var mult2 = document.querySelector("#multi");
+    var bet = document.querySelector("#bet");
+    //console.log("bet check: " + bet.value);
+    //console.log("mult: " + mult2.value);
+      if(mult2.value <= numbered){
+          if(numbered*100 % 100 == 0){
+            word(numbered + ".00x", "#00ff00"); 
+
+          }else if(num3 % 10 == 0){
+            word(numbered + "0x", "#00ff00");
+
+          }else{
+            word(numbered + "x", "#00ff00");
+            
+          }
+          counterValue--;
+          counterValue++;
+          //console.log("it is counting up");
+          //console.log("counterValue after counting: " + counterValue);
+          //console.log("counter: " + counterValue + "| mult2.value: " + mult2.value + "| bet: " + bet.value);
+          //console.log("checking bug: " + (counterValue + (mult2.value-1)*bet.value));
+          counterValue = counterValue + ((mult2.value-1)*bet.value);
+          updateCounterText(counterValue);
+          localStorage.setItem("counterValue", counterValue);
+      }else{
+          if(numbered*100 % 100 == 0){
+            word(numbered + ".00x", "red");    
+          }else if(num3 % 10 == 0){
+            word(numbered + "0x", "red");
+          }else{
+            word(numbered + "x", "red");
+          }
+          //console.log("it is counting ");
+          //console.log("counterValue after counting: " + counterValue);
+
+          counterValue = counterValue - bet.value;
+          updateCounterText(counterValue);
+          localStorage.setItem("counterValue", counterValue);
+      }
+
+/*      const par4 = document.createElement("p");
+  const node4 = document.createTextNode("Placeholder counter");
+para4.appendChild(node4);
+const element3 = document.getElementById("div5");
+element4.appendChild(para4);
+*/
+      cooldown = false;
+    }, wait*flips+1);
+
+
+
+          }else{
+            multi.style.border = "2px solid red";
+            bet.style.border = "2px solid green";
+          }
+      }else if(multi.value != "" && multi.value*10%10 == 0){
+        bet.style.border = "2px solid red";
+        multi.style.border = "2px solid green";
+      }else{
+        bet.style.border = "2px solid red";
+        multi.style.border = "2px solid red";
+      }
+  
+  }
+  
+}//end function rand
+
+
+function increase(i, num){
+  var time = i *wait;
+  var numbered = Math.round((Math.round((num + 1)*100)/100)*10000)/10000;
+
+
+    times = -1;
+    setTimeout(() => {
+        times++;
+        var num2 = numbered *10;
+        var num3 = num2 * 10;
+        if(numbered*100 % 100 == 0){
+          word(numbered + ".00x", "white");           
+        }else if(num3 % 10 == 0){
+          word(numbered + "0x", "white");
+        }else{
+          word(numbered + "x", "white");
+        }    
+        const audio = new Audio("click.wav");
+        if(times%(Math.round(flips/effectFrequency))==0){
+          audio.play();
+        }
+      
+      //console.log("clicked");           
+    }, time); 
+
+    
+
+}
+function word(worded, colorx) {3
+  const idk = document.getElementById("canvas").getContext("2d");
+  idk.clearRect(0, 0, canvas.width, canvas.height);
+  draw();
+
+  idk.font = "90px Fantasy"; // Increase the font size here
+  idk.fillStyle = colorx;
+
+  // Measure text width and height
+  const textMetrics = idk.measureText("1.00x");
+  const textWidth = textMetrics.width;
+  const textHeight = parseInt(idk.font);
+
+  // Draw text at the center of the canvas
+  idk.fillText(worded, cwidth/2 -textWidth/4 , cheight / 2 );
+}
+
+function restart(){
+  counterValue = 100;
+  counterValue--;
+  counterValue++;
+  localStorage.setItem('counterValue', counterValue);
+  //localStorage.setItem("counterValue", "100");
+  //counterValue = 100;
+  //localStorage.setItem("counterValue", "100");
+          updateCounterText();
+          
+  //counterValue = 100;
+ // document.getElementById("counterValue").innerHTML = 100;
+  
+
+  
+}
+
+function updateCounterText() {
+var next = counterValue + "x";
+    document.getElementById("counterValue").textContent = next;
+  }
+
+function start(){
+
+draw();
+word("1.00x", "white");
+
+//console.log(counterValue);
+
+  let heighty = screen.availHeight;
+  let widthx = screen.availWidth;
+
+  const para = document.createElement("p");
+const node = document.createTextNode("Bid Amount");
+para.appendChild(node);
+const element = document.getElementById("div1");
+element.appendChild(para);
+
+const para2 = document.createElement("p");
+  const node2 = document.createTextNode("Target Multiplier");
+para2.appendChild(node2);
+const element2 = document.getElementById("div2");
+element2.appendChild(para2);
+
+const para3 = document.createElement("h1");
+  const node3 = document.createTextNode("Total Diamonds");
+para3.appendChild(node3);
+const element3 = document.getElementById("div3");
+element3.appendChild(para3);
+}//end start
+
+
+    </script>
+  </body>
+  <body onload="start()" style="margin:auto;background:#3BB9FF;">
+    
+    <div id="target" style="margin:auto;background:#FFFFFF;"></div>
+    
+    </body>
+</html>

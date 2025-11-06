@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="http://fonts.cdnfonts.com/css/minecraft-4" rel="stylesheet">
+    <script data-ad-client="ca-pub-3517828409778918" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<title> Block </title>
+<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+<script>
+    var level = [];
+function start(){
+    
+    sjs.open("target",1500,600);
+
+
+    var background = new sjs.Image("https://i.pinimg.com/originals/e9/a1/fc/e9a1fc94f3b36348ba98e550bdf4a207.jpg");
+background.setSize(sjs.getWidth(), sjs.getHeight());
+
+//Developer Mode
+var devBtn = new sjs.Button("Dev", function(){
+
+var testBtn = new sjs.Button("Test", function(){
+    localStorage.setItem('level', sjs.saveImageArray(level));
+});
+
+var showBtn = new sjs.Button("Show", function(){
+
+var output = document.querySelector("#output");
+output.innerHTML = sjs.saveImageArray(level);
+});
+
+showBtn.offset(60, 3);
+testBtn.offset(3,3);
+
+devBtn.destroy();
+});
+//end Dev Mode
+
+devBtn.offset(3,3);
+
+var exitBtn = new sjs.Button("Exit", function(){
+window.location = "index.html";
+});
+
+exitBtn.moveTo(750,570);
+
+//Player Properties
+var canJump = true;
+var player = new sjs.Image("images/dogR.png");
+player.type="player";
+player.setSize(85,93);
+player.setGravity(7);
+player.friction=.1;
+player.noBounds = true;
+player.onMouseDown(function(){
+
+sjs.keyDown(RIGHT_KEY, function(){
+player.pushRight(2);
+player.setImage("images/dogR.png");
+}); //end Right key
+
+sjs.keyDown(LEFT_KEY, function(){
+player.pushLeft(2);
+player.setImage("images/dogL.png");
+}); //end Left key
+
+
+//Jumping Code
+sjs.keyDown(UP_KEY, function(){
+if(canJump == true){
+player.pushUp(50);
+canJump = false;
+
+}
+}); //end keyDown function
+
+
+}); //end player
+
+
+
+//OnHits
+sjs.onHit("player",["right_screen","left_screen","top_screen","bottom_screen"],function(x,y){
+sjs.stoppedBy(x,y);
+canJump = true;
+});
+
+sjs.onHit("player","block", function(x,y){
+sjs.stoppedBy(x,y);
+sjs.bounceOff(x,y);
+canJump = true;
+});
+
+} //end start
+
+
+//variables
+var blockSize = 30;
+var upUse = 1;
+var downUse = 1;
+var rightUse = 1;
+var leftUse = 1;
+var pop = new Audio('audio/pop.mp3');
+//end variables
+
+
+
+//begining functions
+
+//mbf is moving blocks function
+//this tells the game how to move the blocks
+
+function blockz(blockz){
+    pop.play();
+    sjs.keyDown(UP_KEY, function(){
+    if(upUse == 1){
+        upUse = 0;
+        blockz.moveTo(blockz.x,blockz.y-blockSize);
+        setTimeout(function(){
+upUse = 1;
+},200);
+} 
+});
+
+sjs.keyDown(DOWN_KEY, function(){
+    pop.play();
+    if(downUse == 1){
+        downUse = 0;
+        blockz.moveTo(blockz.x,blockz.y+blockSize);
+setTimeout(function(){
+downUse = 1;
+},200);
+    }
+});
+
+sjs.keyDown(LEFT_KEY, function(){
+    pop.play();
+    if(leftUse == 1){
+        leftUse = 0;
+        blockz.moveTo(blockz.x-blockSize,blockz.y);
+     setTimeout(function(){
+leftUse = 1;
+},200);
+    }
+});   
+
+sjs.keyDown(RIGHT_KEY, function(){
+    pop.play();
+    if(rightUse == 1){
+        rightUse = 0;
+        blockz.moveTo( blockz.x+blockSize, blockz.y);
+    setTimeout(function(){
+rightUse = 1;
+},200);
+    }    
+});
+}
+    
+
+//end moving blocks function
+
+
+var musicTime = true;
+    function music(){
+        if(musicTime == true){
+    var music = new Audio('https://connectloaded.com/wp-content/uploads/2021/02/Masked-Wolf-Astronaut-In-The-Ocean-Official-Music-Video.mp3');
+	var url = location.href;
+	if(url.indexOf("off")>1){
+		music.pause();
+	}else{
+ 		music.play();
+         music.volume = 0.1;
+         musicTime = false;
+	}
+}
+}
+
+
+//end functions
+
+
+
+
+
+//Function Bedrock
+function bedrock(){
+var bedrock = new sjs.Image("images/bedrock.png");
+level.push(bedrock);
+bedrock.type = "block";
+bedrock.setHeight(30);
+bedrock.moveTo(750,300);
+bedrock.onMouseDown(function(){
+
+    //blockz(bedrock);
+
+    bedrock.draggable();
+    bedrock.follow(sjs.mouse);
+});
+} //end function bedrock
+
+
+
+//function brick
+function brick(){
+var brick = new sjs.Image("images/brick.png");
+level.push(brick);
+brick.type = "block";
+brick.setHeight(30);
+brick.moveTo(750,300);
+brick.onMouseDown(function(){
+    blockz(brick);
+  
+});
+    }
+
+    
+
+
+//function glass
+function glass(){
+var glass = new sjs.Image("images/glass/glass.png");
+level.push(glass);
+glass.type = "block";
+glass.setHeight(30);
+glass.moveTo(750,300);
+glass.onMouseDown(function(){
+
+    blockz(glass);
+
+});//glass toggling
+var toggle = 0;
+window.addEventListener("keyup", function(e){
+if(e.keyCode == G_KEY){
+ 
+   var cc = prompt("Enter a new color for the glass.", "cyan");  
+   if (cc != null) {
+   var cImage= ("images/glass/glass_" + cc + ".png");
+  glass.setImage(cImage);
+
+  }
+}//end glass toggle
+
+});
+}//end function glass
+
+
+//Function Oak Log
+function oak_log(){
+var oak_log = new sjs.Image("images/log_oak.png")
+level.push(oak_log);
+oak_log.type = "block";
+oak_log.setHeight(30);
+oak_log.moveTo(750,300);
+oak_log.onMouseDown(function(){
+
+    blockz(oak_log);
+    oak_log.draggable();
+    oak_log.follow(sjs.mouse);
+
+});
+} //end function oak_log
+
+oak_log.onMouseDown(function(){
+oak_log.draggable();
+oak_log.follow(sjs.mouse);
+});
+
+
+
+</script>
+<style>
+    @import url('http://fonts.cdnfonts.com/css/minecraft-4');
+    </style>
+</head>
+<body onload="start()" style="margin:auto;background:rgba(62, 161, 32, 0.466);">
+<p></p>
+<center>
+    <input type="image" src="images/brick.png" style="width: 2%;" onclick="brick()">
+    <input type="image" src="images/bedrock.png" style="width: 2%;" onclick="bedrock()">
+    <input type="image" src="images/glass/glass.png" style="width: 2%;" onclick="glass()">
+    <input type="image" src="images/log_oak.png" style="width: 2%;" onclick="oak_log()">
+</center>
+<div id="target" style="margin:auto;background:#510af838;"></div>
+<br>
+<marquee>Press the G key on glass to change the color.</marquee>
+<br/>
+<div id="output" style="margin:0 50 0 50;"></div>
+<br/><br/>
+</body>
+</html>

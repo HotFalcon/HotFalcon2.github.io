@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Calories Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 50px;
+    }
+    #result {
+      font-weight: bold;
+    }
+    .food-entry {
+      background-color: #424549;
+      color: white;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .food-image {
+      max-width: 50px;
+      max-height: 50px;
+      margin-left: 10px;
+    }
+    #detailed-view {
+      display: none;
+    }
+    #detailed-info {
+      text-align: left;
+      margin: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    #detailed-info div {
+      margin-bottom: 10px;
+    }
+    #back-button {
+      margin-top: 20px;
+      padding: 10px;
+      cursor: pointer;
+      background-color: #424549;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    #enter-button {
+      margin-top: 20px;
+      padding: 10px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    .button-container {
+      margin-top: 10px;
+    }
+    .toggle-button {
+      padding: 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+    .active-button {
+      background-color: #808080;
+      color: white;
+    }
+
+    .center-text {
+      text-align: center;
+    }
+
+    .navitem {
+      list-style-type:none;
+      display:inline;
+      padding: 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      margin-right: 40px;
+
+    }
+    
+    #navmenu {
+
+      background-color:#4EE2EC;
+      color:#c55e3b;
+      border-radius: 5px;
+    }
+  
+    a {
+      text-decoration: none;
+      font-size: large;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>Food Calories Calculator</h1>
+
+  <nav>
+    <ul id="navmenu">
+      <li class="navitem"><a href="food.html">Search</a></li>
+       <li class="navitem"><a href="foodDiary.html">Food Log</a></li>
+     </ul>
+    </nav>
+  <div class="button-container">
+    <button id="button1" class="toggle-button" onclick="setVariable(10)">Brand</button>
+    <button id="button2" class="toggle-button" onclick="setVariable(20)">Survey</button>
+  </div>
+  <label for="foodInput">Enter a food item:</label>
+  <input type="text" id="foodInput" placeholder="e.g., Apple">
+  <button onclick="searchFoods()">Search Foods</button>
+  <div id="result"></div>
+  <div id="detailed-view">
+    <button id="back-button" onclick="goBack()">Back to Results</button>
+    <div id="detailed-info">
+  <div>
+        <label for="servingsInput">Servings:</label>
+        <input type="text" id="servingsInput" placeholder="number">
+      </div>
+    </div>
+      <button id="enter-button" onclick="enter()">Enter in Food</button>
+  </div>
+
+  <script>
+      var ingredients = ["Calories", "Energy", "Protein", "Protein", "Fat", "Total lipid (fat)","Sugar", "Sugars, total including NLEA", "Carbohydrate", "Carbohydrate, by difference"];
+      var counts =0;
+
+    function setVariable(value) {
+      selectedVariable = value;
+      document.getElementById('button1').classList.remove('active-button');
+      document.getElementById('button2').classList.remove('active-button');
+      //document.getElementById('button3').classList.remove('active-button');
+      // Set active style to the clicked button
+      if (value === 10) {
+        if(counts == 2 || counts == 3){
+
+        }
+        counts = 1;
+        document.getElementById('button1').classList.add('active-button');
+
+      } else if (value === 20) {
+        if(counts == 1 || counts == 3){
+
+        }
+        counts = 2;
+        document.getElementById('button2').classList.add('active-button');
+
+      }   
+      
+
+    }
+// Default variable
+
+    var selectedVariable = 10;
+    function searchFoods() {
+      var foodName = document.getElementById('foodInput').value;
+      var apiKey = 'JKpxfcu2ZFmryeClOrglGx7f5DpJVd1FExgdXdWl';
+      if(counts == 1){
+        var apiUrl = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(foodName)}&api_key=${apiKey}&dataType=Branded`;
+      }else if(counts == 2){
+        var apiUrl = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(foodName)}&api_key=${apiKey}&dataType=Survey%20(FNDDS)`;
+      }if (counts == 3) {
+        var apiUrl = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(foodName)}&api_key=${apiKey}&dataType=Foundation`;
+      }
+      fetch(apiUrl)
+      
+        .then(response => response.json())
+        .then(data => {
+          var resultContainer = document.getElementById('result');
+          resultContainer.innerHTML = ''; 
+          if (data.foods && data.foods.length > 0) {
+            data.foods.forEach(food => {
+              if (food.foodNutrients && food.foodNutrients.length > 0) {
+                fetch(`https://api.nal.usda.gov/fdc/v1/food/${food.fdcId}?api_key=${apiKey}`)
+                  .then(response => response.json())
+                  .then(detailedData => {
+
+                    var accurateCalories = calculateAccurateCalories(
+                      food.foodNutrients,
+                      food.foodMeasures,
+                      food.servingSize,
+                      food.householdServingFullText
+                    );
+                    var foodEntry = createFoodEntry(food, accurateCalories);
+                    resultContainer.appendChild(foodEntry);
+                  })
+                  .catch(error => {
+                    console.error('Error fetching detailed food information:', error);
+                  });
+              }
+            });
+          } else {
+            var notFoundElement = document.createElement('div');
+            notFoundElement.innerText = `No survey foods found for ${foodName}`;
+            resultContainer.appendChild(notFoundElement);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+          document.getElementById('result').innerText = 'An error occurred while fetching data';
+        });
+    }
+
+
+
+      var count = 1;
+    function info(name, value, unit, inputs){
+      if(count == 6){
+        count = 1;
+      }
+      let variableName = 'myVariable' + count;
+      let variableValue  = [name, value, unit.toLowerCase(), inputs];
+      window[variableName] = variableValue;
+  
+      count++;
+      document.getElementById(inputs).innerText = name + `: ${value}` + unit.toLowerCase();
+    }
+
+
+    function calcFound(foodNutrients, foodMeasures, servingSize, householdServingFullText, name, lookup, serv) {
+        var energy = foodNutrients.find(nutrient => nutrient.nutrientName === lookup);
+        var measure = foodMeasures.find(measure => measure.rank === 1);
+        var inputs = name + "Result";
+      if(!energy){
+        if(lookup == "Sugars, total including NLEA"){
+          var energy = foodNutrients.find(nutrient => nutrient.nutrientName === "Total Sugars");
+        }
+      }
+      if (!energy) {
+        var energy2 = foodNutrients.find(nutrient => nutrient.nutrientName === lookup);
+        if(energy2){
+          info(name, energy.value, energy.unitName, inputs);
+        }
+      
+      }else if(householdServingFullText){
+        var fixed = Math.round(energy.value / 100 * servingSize);
+        info(name, fixed, energy.unitName, inputs);
+      } else if (typeof servingSize === 'number') {
+        var fixed = Math.round((energy.value / 100) * servingSize);
+        info(name, fixed, energy.unitName, inputs);
+      }else if (!foodMeasures || foodMeasures.length === 0) {
+        info(name, energy.value, energy.unitName, inputs);
+      } else if (!measure || !measure.gramWeight) {
+        info(name, energy.value, energy.unitName, inputs);
+      }else{
+              var accurateCalories = Math.round((measure.gramWeigt / 100) * energy.value);
+      var servingSizeName = measure.disseminationText || 'N/A';
+      info(name, accurateCalories, energy.unitName, inputs);
+      }
+    }
+
+
+
+    function calculateAccurateCalories(foodNutrients, foodMeasures, servingSize, householdServingFullText) {
+      
+
+      // Ensure that foodNutrients is present and not an empty array
+      if (!foodNutrients || foodNutrients.length === 0) {
+        return { calories: 'N/A', servingSizeName: 'N/A' };
+      }
+      var energy = foodNutrients.find(nutrient => nutrient.nutrientName === 'Energy');
+      if (!energy) {
+        var energy2 = foodNutrients.find(nutrient => nutrient.nutrientName === 'Energy (Atwater General Factors)');
+        if(energy2){
+          return { calories: energy2.value, servingSizeName: '100g' };
+        }
+        return { calories: 'N/A', servingSizeName: 'N/A' };
+      }
+      if (householdServingFullText) {
+        var fixed = energy.value / 100 * servingSize;
+        return { calories: fixed, servingSizeName: householdServingFullText };
+      }
+      if (typeof servingSize === 'number') {
+        var accurateCalories = (energy.value / 100) * servingSize;
+        return { calories: accurateCalories, servingSizeName: servingSize + 'g' };
+      }
+      if (!foodMeasures || foodMeasures.length === 0) {
+        return { calories: energy.value, servingSizeName: '100g' };
+      }
+      var measure = foodMeasures.find(measure => measure.rank === 1);
+      if (!measure || !measure.gramWeight) {
+        return { calories: energy.value, servingSizeName: '100g' };
+      }
+      var accurateCalories = (measure.gramWeight / 100) * energy.value;
+      var servingSizeName = measure.disseminationText || 'N/A';
+      return { calories: accurateCalories, servingSizeName };
+    }
+
+
+
+    function createFoodEntry(food, accurateCalories) {
+      var foodEntry = document.createElement('div');
+      foodEntry.classList.add('food-entry');
+
+      var foodNameElement = document.createElement('div');
+      foodNameElement.innerText = `Food: ${food.description}`;
+      foodEntry.appendChild(foodNameElement);
+
+      var caloriesElement = document.createElement('div');
+      caloriesElement.innerText = `Calories: ${Math.round(accurateCalories.calories)} kcal`;
+      foodEntry.appendChild(caloriesElement);
+
+      var servingSizeElement = document.createElement('div');
+      servingSizeElement.innerText = `Serving Size: ${accurateCalories.servingSizeName}`;
+      foodEntry.appendChild(servingSizeElement);
+
+      // Add a click event listener
+      foodEntry.addEventListener('click', function () {
+        var servingxx = 1;
+
+        displayDetailedInfo(food, servingxx);
+      });
+
+      return foodEntry;
+    }
+
+
+
+    function update(){
+
+      var servingsInput = document.getElementById('servingsInput');
+      var servingsValue = servingsInput.value;
+      var changge = servingsValue;
+      setTimeout(() => {
+
+        var servingsInput = document.getElementById('servingsInput');
+        var servingsValue = servingsInput.value;
+        if(changge !== servingsValue){
+     
+          document.getElementById(myVariable1[3]).innerText = myVariable1[0] + `: ${myVariable1[1] * servingsValue}` + myVariable1[2];
+          document.getElementById(myVariable2[3]).innerText = myVariable2[0] + `: ${myVariable2[1] * servingsValue}` + myVariable2[2];
+          document.getElementById(myVariable3[3]).innerText = myVariable3[0] + `: ${myVariable3[1] * servingsValue}` + myVariable3[2];
+          document.getElementById(myVariable4[3]).innerText = myVariable4[0] + `: ${myVariable4[1] * servingsValue}` + myVariable4[2];
+          document.getElementById(myVariable5[3]).innerText = myVariable5[0] + `: ${myVariable5[1] * servingsValue}` + myVariable5[2];
+        }
+      }, 100);
+}
+
+    // Function to display detailed information about the selected food
+    function displayDetailedInfo(food, servingxx) {
+
+      var detailedView = document.getElementById('detailed-view');
+      var detailedInfo = document.getElementById('detailed-info');
+      var measureDropdownContainer = document.getElementById('measureDropdownContainer');
+
+      // Hide result view and show detailed view
+      document.getElementById('result').style.display = 'none';
+      detailedView.style.display = 'block';
+
+      // Generate HTML to display all information about the food
+      var html = '<div>';
+
+      if(food.description){
+        html += '<div class="center-text" id="Title">Title</div>';
+      }
+      if(food.brandName){
+        html += '<div class="center-text" id="Brand">Brand</div>';
+      }
+      if(food.householdServingFullText){
+        html += '<div class="center-text" id="ServingS">Brand</div>';
+      }
+
+      // Check if there are multiple measures
+      if (food.foodMeasures && food.foodMeasures.length > 1) {
+        food.foodMeasures.sort((a, b) => a.rank - b.rank);
+        html += '<div class="center-text">';
+        html += '<div id="measureDropdownContainer">';
+        html += '<label for="measureDropdown">Serving Size:</label>';
+        html += '<select id="measureDropdown">';
+        html += '</div>';
+        food.foodMeasures.forEach((measure, index) => {
+          html += '<div class="center-text">';
+          html += `<option value="${index}">${measure.disseminationText || 'N/A'}</option>`;
+          html += '</div>';
+        });
+        html += '</select>';
+        }
+        
+        html += '<div class="center-text">';
+        html += '<label for="servingsInput">Servings: </label>' ;
+        html += '<input type="number" id="servingsInput" value="1" min="1" step="1">';
+        
+
+        html += '<div>';
+        html += '<div id="CaloriesResult">Calories: N/A</div>';
+        html += '<div id="ProteinResult">Protein: N/A</div>';
+        html += '<div id="SugarResult">Sugars: N/A</div>';
+        html += '<div id="FatResult">Fat: N/A</div>';
+        html += '<div id="CarbohydrateResult">Fat: N/A</div>';
+        html += '</div>';
+      
+      detailedInfo.innerHTML = html;
+      servingsInput.value = 1;
+
+
+      if(food.description){
+        document.getElementById("Title").innerText = food.description;
+
+      }
+      if(food.brandName){
+        document.getElementById("Brand").innerText = food.brandName;
+      }
+      if(food.householdServingFullText){
+        document.getElementById("ServingS").innerText = food.householdServingFullText;
+      }
+
+      
+      // Add event listener to the dropdown
+      if (food.foodMeasures && food.foodMeasures.length > 1) {
+
+        var dropdown = document.getElementById("measureDropdown");
+        var selectedMeasure = food.foodMeasures[0];
+  
+
+        var myVariable6 = "myVariable6"
+        var six = [food.description, selectedMeasure.disseminationText]
+        window[myVariable6] = six;
+
+
+        dropdown.addEventListener("change", function () {
+          var selectedMeasureIndex = this.value;
+          var selectedMeasure = food.foodMeasures[selectedMeasureIndex];
+          var six = [food.description, selectedMeasure.disseminationText]
+          window[myVariable6] = six;
+
+          calculateAndUpdateCalories(selectedMeasureIndex, food);
+        });
+
+        // Trigger the change event to initialize the dropdown
+        var event = new Event('change');
+        dropdown.dispatchEvent(event);
+
+      }else{
+        var myVariable6 = "myVariable6"
+        if(food.householdServingFullText){
+        var six = [food.description, food.householdServingFullText]
+        window[myVariable6] = six;
+        }else if(food.servingSizeUnit && food.servingSize){
+        var sizze =  food.servingSize + food.servingSizeUnit;
+        var six = [food.description, Math.round(sizze)]
+        window[myVariable6] = six;
+        }else{
+        var six = [food.description, "100g"]
+        window[myVariable6] = six;
+        }
+        
+
+        for(var d = 0; d <= 9; d+=2){
+                  calcFound(
+                      food.foodNutrients,
+                      food.foodMeasures,
+                      food.servingSize,
+                      food.householdServingFullText,
+                      ingredients[d],
+                      ingredients[d+1],
+                    );
+       }
+      } 
+      window["myVariable7"] = "1";
+      setInterval(update, 100);
+
+    }
+
+
+    function correct(name, lookup, selectedIn, food){
+      var selectedMeasure = food.foodMeasures[selectedIn];
+      var ingr = food.foodNutrients.find(nutrient => nutrient.nutrientName === lookup);
+        var ingrCalc = Math.round((selectedMeasure.gramWeight / 100) * ingr.value);
+       var inputs2 = name + "Result";
+       info(name, ingrCalc, ingr.unitName.toLowerCase(), inputs2);
+
+    }
+
+    // Function to calculate and update calories based on the selected measure
+    function calculateAndUpdateCalories(selectedMeasureIndex, food) {
+      
+      var nade = food.foodMeasures[selectedMeasureIndex];
+      var selectedMeasure = food.foodMeasures[selectedMeasureIndex];
+      var energy = food.foodNutrients.find(nutrient => nutrient.unitName === 'KCAL');
+      if (energy && selectedMeasure && selectedMeasure.gramWeight) {
+        correct("Calories", "Energy", selectedMeasureIndex, food);
+        correct("Protein", "Protein", selectedMeasureIndex, food);
+        correct("Fat", "Total lipid (fat)", selectedMeasureIndex, food);
+        correct("Sugar", "Sugars, total including NLEA", selectedMeasureIndex, food);
+        correct("Carbohydrate", "Carbohydrate, by difference", selectedMeasureIndex, food);
+      } else {
+        document.getElementById("caloriesResult").innerText = 'Calories: N/A';
+      }
+    }
+
+    function goBack() {
+
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('detailed-view').style.display = 'none';
+    }
+
+    function enter() {
+      var servingsInput = document.getElementById('servingsInput');
+      var servingsValue = servingsInput.value;
+      window["myVariable7"] = servingsValue;
+
+      const lastResetDate = localStorage.getItem("lastResetDate");
+      if (!lastResetDate || isDayPassed(lastResetDate)) {
+          performReset();
+      } else {
+          incrementCounter();
+      }
+      const counterValue = localStorage.getItem("counter");
+      var all = [myVariable1, myVariable2, myVariable3, myVariable4, myVariable5, myVariable6, myVariable7]
+      var allfind = "allInfo" + counterValue;
+      localStorage.setItem(allfind, JSON.stringify(all));
+
+      var destinationURL = 'foodDiary.html';
+      window.location.href = destinationURL;
+    }
+
+    function isDayPassed(lastResetDate) {
+        const now = new Date();
+        const lastResetDay = new Date(lastResetDate);
+
+        return now.toDateString() !== lastResetDay.toDateString();
+    }
+
+    // to perform the reset
+    function performReset() {
+        localStorage.setItem("counter", "1");
+        const now = new Date();
+        const lastResetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        localStorage.setItem("lastResetDate", lastResetDate.toISOString());
+    }
+
+    // Function to increment the counter
+    function incrementCounter() {
+        let counter = parseInt(localStorage.getItem("counter")) || 0;
+        counter++;
+        localStorage.setItem("counter", counter.toString());
+    }
+
+
+  </script>
+
+</body>
+</html>

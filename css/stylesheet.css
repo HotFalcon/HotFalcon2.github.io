@@ -1,0 +1,60 @@
+#logo {
+   width:"20%";
+    }
+    
+    #menu {
+        margin-top:10px;
+        }
+    
+        #comments {
+            border:5px solid brown;
+            margin-top:5px;
+            height:900px;
+            width:100%;
+            background:radial-gradient(circle at 100% 100%, pink, rgba(0, 0, 255, 0.404));
+            }
+    
+    #form {
+    background-color:lightblue;
+    border:3px solid blue;
+    height:700px;
+    float:right;
+    margin:10px;
+    }
+
+    #name {
+        width:150px;
+        margin-right:8px; }
+
+    @font-face {
+        font-family: 'minecraft';
+        src: url('css/fonts/minecraft-ten-webfont.eot');
+        src: url('css/fonts/minecraft-ten-webfont.eot?#iefix') format('embedded-opentype'),
+             url('css/fonts/minecraft-ten-webfont.woff2') format('woff2'),
+             url('css/fonts/minecraft-ten-webfont.woff') format('woff'),
+             url('css/fonts/minecraft-ten-webfont.ttf') format('truetype'),
+             url('css/fonts/minecraft-ten-webfont.svg#minecraftten') format('svg');
+        font-weight: normal;
+        font-style: normal;
+    
+    }
+
+    #header {
+        text-align:center;
+        background:radial-gradient(circle at 100% 100%, rgba(99, 228, 131, 0.384), rgba(0, 0, 255, 0.404));
+        font-size:2.5em;
+        font-family: minecraft;
+        text-decoration:bold;
+        color:white;
+        border-radius:10px;
+        margin-left:-16px;
+        margin-right:-16px;
+        margin-bottom:15px;
+        }
+
+    .icon{
+        height: 45px;
+        width: 45px;
+        padding-right:10px;
+    }
+            

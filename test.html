@@ -1,0 +1,205 @@
+<html>
+<head>
+    <script data-ad-client="ca-pub-3517828409778918" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="css/stylesheet.css">
+<title> Comment Post </title>
+</head>
+<body style="background:radial-gradient(circle at 100% 100%, rgba(98, 226, 81, 0.274), rgba(76, 0, 255, 0.185))">
+<div class="container">
+<div class="row">
+<div class="col-sm-4" id="logo">LOGO</div>
+<img id="logo" class="img-responsive" src="images/icon/viking_logo.png" />
+</div> <!-- end logo row -->
+
+<div class="row">
+    <div class="col-sm-12" id="menu">
+    <nav class="navbar navbar-expand bg-info navbar-light">
+    <ul class="navbar-nav">
+    <li class="nav-item">
+    <a class="nav-link" href="https://twitch.tv">Twitch</a>
+    </li>
+    <li class="nav-item">
+    <a class="nav-link" href="https://youtube.com">Youtube</a>
+    </li>
+    <li class="nav-item">
+    <a class="nav-link" href="https://discord.com/channels/@me">Discord</a>
+    </li>
+    <ul>
+    </nav>
+    </div>
+    </div> <!-- end menu row -->
+
+    <div class="row">
+        <div class="col-sm-12" id="comments">
+        COMMENTS
+        <div class="col-sm-12 col-md-5" id="form">
+            <header id="header"> Comment </header>
+            <div id="message"></div>
+            <form class="form-inline">
+                <label>Username:</label>
+                <input type="text" class="form-control" id="name" placeholder="Enter Username">
+                <label></label>
+                <select id="textColor" class="form-control">
+                    <option>Select a Color</option>
+                    <option> Red </option>
+                    <option> Orange </option>
+                    <option> Black </option>
+                    <option> Blue </option>
+                </select>
+            </form>
+            <form>
+                <label>Title:</label>
+                <input type="text" class="form-control" id="title" placeholder="Comment Title">
+                <label>Background Color</label>
+                <select id="bgColor" class="form-control">
+                    <option>Background Color</option>
+                    <option> Pink </option>
+                    <option> Gray </option>
+                    <option> Light Blue </option>
+                    <option> White </option>
+                </select>
+            </form>
+            <form class="form-inline" id="radiobtns">
+                <label> Icons: </label>
+                <input type="radio" name="icon">
+                <img src="images/icon/creeper.png" class="icon" value="creeper.png"/>
+                <input type="radio" name="icon">
+                <img src="images/icon/zombie.png" class="icon" value="zombie.png"/>
+                <input type="radio" name="icon">
+                <img src="images/icon/skeleton.png" class="icon" value="images/icons/skeleton.png"/>
+                <input type="radio" name="icon">
+                <img src="images/icon/sheep.png" class="icon" value="sheep.png"/>
+            </form>
+            <label> Comment:</label>
+                <textarea id="textarea" class="form-control" rows="8"></textarea>
+                <input onclick="validate()" class="btn btn-default" type="button" value="Submit Comment">
+            </div>
+        </div><!--end form div-->
+        <div id="show"></div>
+        </div> <!-- end comment row -->
+        
+        </div> <!-- end container div -->
+        
+       <center> <iframe width="560" height="315" src="https://www.youtube.com/embed/MEg-oqI9qmw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> </center>
+
+<script>
+
+var array = [];
+
+
+function validate(){
+//VARIABLES
+var name = document.querySelector("#name");
+var title = document.querySelector("#title");
+var textarea = document.querySelector("#textarea");
+var textColor = document.querySelector("#textColor");
+var bgColor = document.querySelector("#bgColor");
+var radiobtns = document.querySelector("#radiobtns");
+var icons = document.querySelectorAll("[name='icon']");
+var message = document.querySelector("#message");
+
+var radio_choice = false;
+var blank_field = true;
+
+if(name.value == ""){
+name.style.border = "2px solid red";
+blank_field = true;
+} else {
+name.style.border = "2px solid green";
+blank_field = false;
+}
+
+if(title.value == ""){
+title.style.border = "2px solid red";
+blank_field = true;
+} else {
+title.style.border = "2px solid green";
+blank_field = false;
+}
+
+if(textarea.value == ""){
+textarea.style.border = "2px solid red";
+blank_field = true;
+} else {
+textarea.style.border = "2px solid green";
+blank_field = false;
+}
+
+if(textColor.value == "Select a Color"){
+textColor.style.border = "2px solid red";
+blank_field = true;
+} else {
+textColor.style.border = "2px solid green";
+blank_field = false;
+}
+
+if(bgColor.value == "Background Color"){
+bgColor.style.border = "2px solid red";
+blank_field = true;
+} else {
+bgColor.style.border = "2px solid green";
+blank_field = false;
+}
+
+for(var i=0; i < icons.length; i++){
+if(icons[i].checked == true){
+radio_choice = true;
+radiobtns.style.border = "none";
+break;
+} else {
+radio_choice = false;
+radiobtns.style.border = "2px solid red";
+}
+
+} //end for loop
+
+if(blank_field == false && radio_choice == true){
+message.innerHTML = "";
+save();
+} else {
+message.innerHTML = "<h3 style='color:red'>You Missed a Spot!</h3>";
+}
+
+} //end function validate
+
+function save(){
+/* Variables */
+var name = document.querySelectorAll("[name='icon']");
+var title = document.querySelector("#title");
+var textarea = document.querySelector("#textarea");
+var icon = document.querySelectorAll("[name='icon']");
+var icon_value;
+
+for(var i=0; i < icon.length; i++){
+if(icon[i].checked == true){
+icon_value = icon[i].value;
+}
+}
+
+var storage = {name: name.value, title: title.value, textarea: textarea.value, icon: icon_value};
+array.push(storage);
+
+display();
+} //end function save
+
+
+
+
+function display(){
+var show = document.querySelector("#show");
+var post = "";
+for(var i=0; i < array.length; i++){
+post += "<img src='"+array[i].icon+"' class='icon' />";
+post += "<strong> "+array[i].name+ "</strong><br>";
+post += "<strong> "+array[i].title+ "</strong><br>";
+post += array[i].textarea;
+
+}
+show.innerHTML = post;
+} //end function display
+
+</script>
+
+    </body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script data-ad-client="ca-pub-3517828409778918" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<title> Win </title>
+<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+<script>
+function start(){
+sjs.open();
+
+
+//sounds
+var bruh = new Audio('Music/bruh.mp3');
+sjs.keyDown(B_KEY,function(){
+bruh.play();
+});
+
+var oof = new Audio('Music/oof.mp3');
+sjs.keyDown(O_KEY,function(){
+oof.play();
+});
+
+
+
+
+var image = new sjs.Image("https://s3-us-west-2.amazonaws.com/simplycoding/GameDesignVideos/Images/fireworks.gif");
+image.setSize(500, 400);
+
+var win_txt = new sjs.Text("Victory Is Yours!", 44, "orange");
+win_txt.center().offset(0,-50);
+
+var menuBtn = new sjs.Button("Main Menu", function(){
+window.location = "index";
+});
+menuBtn.center();
+
+var score_txt = new sjs.Text("Score: 0", 21, "orange");
+score_txt.setText("Score: " +localStorage.getItem("score"));
+
+}
+</script>
+</head>
+<body onload="start()" style="margin:auto;background:#C45AEC;">
+<h1> You Win </h1>
+
+<div id="target" style="margin:auto;background:grey;"></div>
+</body>
+</html>

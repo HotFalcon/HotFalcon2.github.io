@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Find Permanently Closed Places</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #results {
+            margin-top: 20px;
+        }
+        .place {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Find Permanently Closed Places</h1>
+    <form id="searchForm">
+        <label for="latitude">Latitude:</label>
+        <input type="text" id="latitude" required>
+        <br>
+        <label for="longitude">Longitude:</label>
+        <input type="text" id="longitude" required>
+        <br>
+        <label for="radius">Radius (miles):</label>
+        <input type="number" id="radius" required>
+        <br>
+        <button type="submit">Search</button>
+    </form>
+    <div id="results"></div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const latitude = parseFloat(document.getElementById('latitude').value);
+            const longitude = parseFloat(document.getElementById('longitude').value);
+            const radius = parseFloat(document.getElementById('radius').value) * 1609.34; // Convert miles to meters
+            findPermanentlyClosedPlaces(latitude, longitude, radius);
+        });
+
+        async function findPermanentlyClosedPlaces(latitude, longitude, radius) {
+            const apiKey = 'fsq35S1PlxSVr7E7F3/cFry6FqjHu7g81CgMcI0UiFNflM0=';
+            const url = `https://api.foursquare.com/v3/places/search?ll=${latitude},${longitude}&radius=${radius}&limit=50`;
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.results) {
+                    const closedPlaces = data.results.filter(place => place.closed === true);
+                    displayResults(closedPlaces);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        function displayResults(places) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            if (places.length === 0) {
+                resultsDiv.textContent = 'No permanently closed places found.';
+                return;
+            }
+
+            places.forEach(place => {
+                const placeDiv = document.createElement('div');
+                placeDiv.className = 'place';
+                placeDiv.textContent = `Name: ${place.name}, Address: ${place.location.address}, ${place.location.locality}, ${place.location.region}, ${place.location.postcode}`;
+                resultsDiv.appendChild(placeDiv);
+            });
+        }
+    </script>
+</body>
+</html>

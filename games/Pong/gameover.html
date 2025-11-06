@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script data-ad-client="ca-pub-3517828409778918" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>s
+<title> Game Over </title>
+<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+<script>
+function start(){
+sjs.open();
+
+
+var bruh = new Audio('Music/bruh.mp3');
+sjs.keyDown(B_KEY,function(){
+bruh.play();
+});
+
+var oof = new Audio('Music/oof.mp3');
+sjs.keyDown(O_KEY,function(){
+oof.play();
+});
+
+var ball = new sjs.Image("Images/pizza.png");
+ball.type = "ball";
+ball.setSize(50,50);
+ball.center();
+ball.friction=0;
+ball.pushUp(3);
+ball.pushRight(4);
+ball.bounce();
+
+var gameover_text = new sjs.Text("Sorry Pong Champ, But You Lost!<hr><br>LOL!",28,"blue","font-family:courior");
+gameover_text.centerH();
+
+var h2play = new sjs.Text("<strong>DO THIS NEXT TIME</strong> <br> Pong is a two-dimensional sports game that simulates table tennis. The player controls an in-game paddle by moving it vertically across the left or right side of the screen. They can compete against another player controlling a second paddle on the opposing side. Players use the paddles to hit a ball back and forth.")
+h2play.center().bottom();
+
+var restartBtn = new sjs.Button("New Game", function(){
+window.location = "index";
+});
+restartBtn.center();
+
+var score_txt = new sjs.Text("Your Score: ", 21, "#7D0552");
+score_txt.setText("Score: "+localStorage.getItem("score"));
+score_txt.center().offset(0,-50);
+
+} //end start
+</script>
+</head>
+<body onload="start()"  style="background-color:lightgreen;">
+<h1> Game Over! </h1>
+<p>Your Bad</p>
+<p>So Sad</p>
+<div id="target" style="margin:auto;background:pink;"></div>
+</body>
+</html>

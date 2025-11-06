@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DJJ7VQE2K8"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-DJJ7VQE2K8');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Generate better seats for sports events using the free SeatGeek Ticket Generator. Improve your experience by switching to premium seats for your favorite games.">
+    <meta name="keywords" content="SeatGeek, Ticket Generator, Free Ticket Generator, Sports Tickets, Better Seats, Premium Tickets, Game Tickets, Braves, Atlanta Braves Tickets, Atlanta Braves, MLB, Free Tickets, Ticket Changer">
+    <meta name="author" content="Hot Falcon">
+    <meta name="robots" content="index, follow">
+    <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <title>FREE SeatGeek Ticket Generator</title>
+
+    <!-- Open Graph tags for better sharing on social media -->
+    <meta property="og:title" content="FREE SeatGeek Ticket Generator">
+    <meta property="og:description" content="Generate better tickets with premium seats for your next sports game using the free SeatGeek Ticket Generator.">
+    <meta property="og:image" content="URL_to_your_image.jpg">
+    <meta property="og:url" content="https://hotfalcon.net/ticketgen.html">
+    <meta property="og:type" content="website">
+    <title>FREE SeatGeek Ticket Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: 95%;
+            padding: 10px;
+            margin: 5px 0 20px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        textarea {
+            width: 95%;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+        .slidecontainer {
+        width: 100%;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #04AA6D;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #04AA6D;
+            cursor: pointer;
+        }
+        .icon{
+            height: 45px;
+            width: 45px;
+            padding-right:10px;
+        }
+
+        .button { background-color: #1c87c9; 
+            border: none;
+            color: white;
+            padding: 20px 34px; 
+            text-align: center;
+            text-decoration: none;
+            display:inline-block; 
+            font-size: 20px;
+            margin: 4px 2px;
+            cursor: pointer; 
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="ticketmaster.html" class="button">Click here for Ticketmaster Generator</a>
+    
+    <h2>FREE SeatGeek Ticket Generator</h2>
+    <img id="preview" src="images/tickets/before after.png" alt="Before and After" />
+    <dialog id="fullscreenImg">
+        <img src="images/tickets/before after.png" style="max-width: 100%; max-height: 100vh;">
+    </dialog>
+    <a href="https://img.mlbstatic.com/mlb-images/image/upload/q_auto/mlb/nnxfivmguyee8tmcvf2b" target="_blank">Braves Seating Chart</a>
+    <p><strong>Works best for Braves Tickets</strong></p>
+    <ul>
+        <li>This does not change the barcode, so the ticket can't be scanned.</li>
+        <li>Fill out the form below.</li>
+        <li>Copy the bookmark code that appears.</li>
+        <li>In Safari, create a bookmark for this page and name it <strong>Ticket Editor</strong>.</li>
+        <li>Edit the new bookmark:</li>
+        <ul>
+          <li>Delete the current URL.</li>
+          <li>Paste in the bookmark code.</li>
+          <li>Save it.</li>
+        </ul>
+        <li>Open SeatGeek.com in Safari.</li>
+        <li>Go to your tickets (where you see section, row, seat, etc.).</li>
+        <li>Tap the <strong>Ticket Editor</strong> bookmark.</li>
+        <li>The ticket info will be changed.</li>
+      </ul>
+    
+    <p><strong>Enter the details of an empty seat you'd like to move to.</strong></p>
+    <p>You can find available seats by checking unsold tickets on sites like SeatGeek, Ticketmaster, etc.</p>
+    <input type="text" id="ticketCount" placeholder="Number of Tickets">
+    <input type="text" id="value0" placeholder="Section Number">
+    <input type="text" id="value1" placeholder="Row Number">
+    <input type="text" id="value2" placeholder="First Seat Number">
+    <input type="text" id="value3" placeholder="Section Title (e.g., Lexus Reserved)">
+    <div class="slidecontainer">
+        <input type="range" min="0" max="10" value="5" class="slider" id="myRange">
+        <p>Amount of Loaded Value: $<span id="demo"></span></p>
+      </div>
+      <label> Season Tickets? </label>
+      <form class="form-inline" id="radiobtns">
+        <label> Yes: </label>
+        <input type="radio" name="icon">
+        <label> No: </label>
+        <input type="radio" name="icon">
+    </form>
+    <button onclick="generateBookmarklet()">Generate Bookmarklet Code</button>
+    <textarea id="bookmarkletCode" rows="10" readonly></textarea>
+    <button id="copyButton" onclick="copyToClipboard()">Copy to Clipboard</button>
+</div>
+
+<script>
+
+
+
+const preview = document.getElementById('preview');
+const dialog = document.getElementById('fullscreenImg');
+
+preview.onclick = () => dialog.showModal();
+dialog.onclick = () => dialog.close();
+
+
+
+
+var added_value = 0
+var slider = document.getElementById("myRange");
+var output = document.getElementById("demo");
+output.innerHTML = slider.value;
+this.value = 25
+output.innerHTML = this.value
+slider.oninput = function() {
+    output.innerHTML = this.value * 5;
+    
+    added_value = output.innerHTML
+    
+
+
+}
+console.log("start")
+var radio_choice = false;
+
+function generateBookmarklet() {
+
+    var icons = document.querySelectorAll("[name='icon']");
+    for(var i=0; i < icons.length; i++){
+    if(icons[i].checked == true){
+    radio_choice = true;
+    console.log("yes");
+    break;
+    } else {
+    radio_choice = false;
+    console.log("no");
+    break;
+    }
+    }//end icons
+
+
+
+    var ticketCount = parseInt(document.getElementById('ticketCount').value);
+    var values = [];
+    for (var i = 0; i < 4; i++) {
+        values.push(document.getElementById('value' + i).value);
+    }
+
+    var cases = '';
+    for (var i = 0; i < ticketCount; i++) {
+       
+        cases += `
+        case ${i*3}:
+            el.innerText = '${values[0]}';
+            break;
+        case ${i*3 + 1}:
+            el.innerText = '${values[1]}'; 
+            break;
+        case ${i*3 + 2}:
+            el.innerText = '${parseInt(values[2])+i}'; 
+            break;
+        `;
+    }
+
+    var bookmarkletCode = `
+javascript:(function(){ 
+    var added_value = ${added_value};
+    var discounted = ${radio_choice};
+    var elements500 = document.querySelectorAll('p[data-uniform-id="typography-subtitle"]');
+    elements500.forEach(function(el, index) {
+        switch(index) {
+            ${cases}
+            default:
+                el.innerText = 'Default Value';
+        }
+    });
+
+    var ticketCount = ${ticketCount};
+    for (var i = 0; i < ticketCount; i++) {
+        var index = 8 + (i * 9); 
+        var labelledLists = document.querySelectorAll('div[class*="LabelledList"]');
+        
+        if (labelledLists.length <= index) {
+            console.error("LabelledList not found for index:", index);
+            continue;
+        }
+
+        var parentList = labelledLists[index];
+        console.log("Labelled List at index", index, labelledLists[index]);
+
+        var firstItem = parentList.querySelector('div:first-child');
+        if (!firstItem) {
+            console.error("No ExtendedListItem found in the labelled list at index", index);
+            continue;
+        }
+
+        var labelSpan = firstItem.querySelector('span[data-uniform-id="typography-text5"]');
+        var valueParagraph = firstItem.querySelector('p[data-uniform-id="typography-text5"]');
+
+        if (!labelSpan || !valueParagraph) {
+            console.error("Required elements not found within firstItem", firstItem);
+            continue;
+        }
+
+        var itemClass = firstItem.className; 
+        var labelClass = labelSpan.className;
+        var valueClass = valueParagraph.className;
+        var lineClass = labelSpan.querySelector('div[class*="ExtendedTicketMeta__Line"]').className;
+
+        var closeButtons = document.querySelectorAll('button[data-testid="close-ticket"]');
+        closeButtons.forEach(function(button) {
+            button.disabled = true;
+        });
+
+        var valueDivHTML = "<div class='" + itemClass + "'>" +
+                                "    <div class='" + labelClass + "'>" +
+                                "        <div class='" + lineClass + "'></div>" +
+                                "    </div>" +
+                                "    <div class='" + valueClass + "'>" +
+                                "        " + '$${added_value} Added Value' +
+                                "    </div>" +
+                                "</div>";
+
+        var discountedDivHTML = "<div class='" + itemClass + "'>" +
+                                "    <div class='" + labelClass + "'>" +
+                                "        <div class='" + lineClass + "'></div>" +
+                                "    </div>" +
+                                "    <div class='" + valueClass + "'>" +
+                                "        " + 'MB$A-List Discount' +
+                                "    </div>" +
+                                "</div>";
+
+        var additionalDivHTML = "<div class='" + itemClass + "'>" +
+                                "    <div class='" + labelClass + "'>" +
+                                "        <div class='" + lineClass + "'></div>" +
+                                "    </div>" +
+                                "    <div class='" + valueClass + "'>" +
+                                "        " + '${values[3]}' +
+                                "    </div>" +
+                                "</div>";
+
+        parentList.innerHTML = '';
+        if (added_value > 0) {
+            parentList.insertAdjacentHTML('beforeend', valueDivHTML);
+        }
+        if (discounted === true) {
+            parentList.insertAdjacentHTML('beforeend', discountedDivHTML);
+        }
+        
+        if ("${values[3]}" != "no"){
+        parentList.insertAdjacentHTML('beforeend', additionalDivHTML)
+        }
+        
+
+        
+    }
+
+})();`;
+
+    document.getElementById('bookmarkletCode').value = bookmarkletCode.trim();
+}
+
+function copyToClipboard() {
+    var copyText = document.getElementById("bookmarkletCode");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // For mobile devices
+
+    document.execCommand("copy");
+
+    alert("Bookmarklet code copied to clipboard!");
+}
+
+
+
+/*
+javascript:(function(){
+})();`;
+*/
+</script>
+
+</body>
+</html>

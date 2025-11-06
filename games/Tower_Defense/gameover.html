@@ -1,0 +1,31 @@
+<html>
+<head>
+    <script data-ad-client="ca-pub-3517828409778918" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<title> Tower Defense Gameover </title>
+<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+<script>
+    // file:///C:/Users/Sally/Desktop/JS%20Coding/Game%20Design%202/Tower%20Defense/gameover
+function start(){
+sjs.open();
+var gameover_text = new sjs.Text("Sorry Tower Losser, But You Lose!",28,"blue");
+
+var restartBtn = new sjs.Button("Restart", function(){
+window.location = "level1";
+});
+
+var menuBtn = new sjs.Button("Main Menu", function(){
+window.location = "index";
+});
+
+gameover_text.centerH();
+restartBtn.center();
+menuBtn.center().offset(0,50);
+
+}
+</script>
+</head>
+<body onload="start()">
+<h1> Game Over</h1>
+<div id="target" style="overflow:hidden; background-color:green; margin:auto;"></div>
+</body>
+</html>

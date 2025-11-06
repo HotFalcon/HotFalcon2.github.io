@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script data-ad-client="ca-pub-3517828409778918" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<title> Block </title>
+<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+<script>
+    var level = [];
+function start(){
+    sjs.open("target",1500,600);
+
+
+    var background = new sjs.Image("https://i.pinimg.com/originals/e9/a1/fc/e9a1fc94f3b36348ba98e550bdf4a207.jpg");
+background.setSize(sjs.getWidth(), sjs.getHeight());
+    
+
+sjs.loadImageArray(localStorage.getItem('level'));
+
+var exitBtn = new sjs.Button("Exit", function(){
+window.location = "index.html";
+});
+
+exitBtn.moveTo(750,570);
+
+sjs.loadImageArray([{"width":30,"height":30,"x":750,"y":300,"sx":0,"sy":0,"topSpeed":10,"src":"images/brick.png","alt":"add text","type":"block","friction":0.05,"classType":"Image"},{"width":30,"height":30,"x":660,"y":300,"sx":0,"sy":0,"topSpeed":10,"src":"images/bedrock.png","alt":"add text","type":"block","friction":0.05,"classType":"Image"}]);
+
+
+
+} //end start
+
+
+
+//variables
+
+var blockSize = 30;
+var upUse = 1;
+var downUse = 1;
+var rightUse = 1;
+var leftUse = 1;
+
+
+function fUpUse(){
+    setTimeout(function(){
+upUse = 1;
+},200);
+}
+
+function fDownUse(){
+    setTimeout(function(){
+downUse = 1;
+},200);
+}
+
+function fRightUse(){
+    setTimeout(function(){
+rightUse = 1;
+},200);
+}
+
+function fLeftUse(){
+    setTimeout(function(){
+leftUse = 1;
+},200);
+}
+
+
+
+
+//Function Bedrock
+
+function bedrock(){
+var bedrock = new sjs.Image("images/bedrock.png")
+level.push(bedrock);
+bedrock.type = "block";
+bedrock.setHeight(30);
+bedrock.moveTo(750,300);
+bedrock.onMouseDown(function(){
+
+sjs.keyDown(UP_KEY, function(){
+    if(upUse == 1){
+        upUse = 0;
+        bedrock.moveTo(bedrock.x,bedrock.y-blockSize);
+    fUpUse();
+} 
+});
+
+sjs.keyDown(DOWN_KEY, function(){
+    if(downUse == 1){
+        downUse = 0;
+    bedrock.moveTo(bedrock.x,bedrock.y+blockSize);
+    fDownUse();
+    }
+});
+
+sjs.keyDown(LEFT_KEY, function(){
+    if(leftUse == 1){
+        leftUse = 0;
+     bedrock.moveTo(bedrock.x-blockSize,bedrock.y);
+    fLeftUse();
+    }
+});   
+
+sjs.keyDown(RIGHT_KEY, function(){
+    if(rightUse == 1){
+        rightUse = 0;
+    bedrock.moveTo(bedrock.x+blockSize,bedrock.y);
+    fRightUse();
+    }    
+});
+
+});
+} //end function bedrock
+
+
+
+//function brick
+
+function brick(){
+var brick = new sjs.Image("images/brick.png");
+level.push(brick);
+brick.type = "block";
+brick.setHeight(30);
+brick.moveTo(750,300);
+brick.onMouseDown(function(){
+
+    sjs.keyDown(UP_KEY, function(a,b){
+    if(upUse == 1){
+        upUse = 0;
+        brick.moveTo(brick.x,brick.y-blockSize);
+    fUpUse();
+} 
+});
+
+sjs.keyDown(DOWN_KEY, function(){
+    if(downUse == 1){
+        downUse = 0;
+        brick.moveTo(brick.x,brick.y+blockSize);
+    fDownUse();
+    }
+});
+
+sjs.keyDown(LEFT_KEY, function(){
+    if(leftUse == 1){
+        leftUse = 0;
+        brick.moveTo(brick.x-blockSize,brick.y);
+    fLeftUse();
+    }
+});   
+
+sjs.keyDown(RIGHT_KEY, function(){
+    if(rightUse == 1){
+        rightUse = 0;
+        brick.moveTo(brick.x+blockSize,brick.y);
+    fRightUse();
+    }    
+});  
+});
+}
+//end function brick
+
+
+
+//function glass
+function glass(){
+var glass = new sjs.Image("images/glass/glass.png");
+level.push(glass);
+glass.type = "block";
+glass.setHeight(30);
+glass.moveTo(750,300);
+glass.onMouseDown(function(){
+
+
+    //keydowns
+    sjs.keyDown(UP_KEY, function(a,b){
+    if(upUse == 1){
+        upUse = 0;
+        glass.moveTo(glass.x,glass.y-blockSize);
+    fUpUse();
+} 
+});
+
+sjs.keyDown(DOWN_KEY, function(){
+    if(downUse == 1){
+        downUse = 0;
+        glass.moveTo(glass.x,glass.y+blockSize);
+    fDownUse();
+    }
+});
+
+sjs.keyDown(LEFT_KEY, function(){
+    if(leftUse == 1){
+        leftUse = 0;
+        glass.moveTo(glass.x-blockSize,glass.y);
+    fLeftUse();
+    }
+});   
+
+sjs.keyDown(RIGHT_KEY, function(){
+    if(rightUse == 1){
+        rightUse = 0;
+        glass.moveTo(glass.x+blockSize,glass.y);
+    fRightUse();
+    }    
+});
+
+
+ //glass toggling
+var toggle = 0;
+sjs.keyDown(G_KEY, function(){
+    window.addEventListener("keyup", function(e){
+(e.keyCode == G_KEY)
+
+
+
+ 
+  	if(toggle == 0){
+  		glass.setImage("images/glass/glass_red.png");
+  		toggle = 1;
+  		return;
+  	} else if (toggle == 1){
+        glass.setImage("images/glass/glass_pink.png");
+  		toggle = 2;
+  		return;
+  	} else if(toggle == 2){
+        glass.setImage("images/glass/glass_orange.png");
+  		toggle = 3;
+  		return;
+  	} else if(toggle == 3){
+        glass.setImage("images/glass/glass_yellow.png");
+  		toggle = 4;
+  		return;
+  	} else if(toggle == 4){
+        glass.setImage("images/glass/glass_lime.png");
+  		toggle = 5;
+  		return;
+  	} else if(toggle == 5){
+        glass.setImage("images/glass/glass_green.png");
+  		toggle = 6;
+  		return;
+  	} else if(toggle == 6){
+        glass.setImage("images/glass/glass_cyan.png");
+  		toggle = 7;
+  		return;
+  	} else if(toggle == 7){
+        glass.setImage("images/glass/glass_light_blue.png");
+  		toggle = 8;
+  		return;
+  	} else if(toggle == 8){
+        glass.setImage("images/glass/glass_blue.png");
+  		toggle = 9;
+  		return;
+  	} else if(toggle == 9){
+        glass.setImage("images/glass/glass_purple.png");
+  		toggle = 10;
+  		return;
+  	} else if(toggle == 10){
+        glass.setImage("images/glass/glass_black.png");
+  		toggle = 11;
+  		return;
+  	} else if(toggle == 11){
+        glass.setImage("images/glass/glass_gray.png");
+  		toggle = 12;
+  		return;
+  	} else if(toggle == 12){
+        glass.setImage("images/glass/glass_black.png");
+  		toggle = 0;
+  		return;
+  	} 
+
+
+    });
+});
+
+});
+}
+//end function glass
+
+
+
+
+</script>
+<style>
+</style>
+</head>
+<body onload="start()" style="margin:auto;background:rgba(62, 161, 32, 0.466);">
+<p></p>
+<center>
+    <input type="image" src="Images/brick.png" style="width: 2%;" onclick="brick()">
+    <input type="image" src="Images/bedrock.png" style="width: 2%;" onclick="bedrock()">
+    <input type="image" src="Images/glass/glass.png" style="width: 2%;" onclick="glass()">
+</center>
+<div id="target" style="margin:auto;background:#510af838;"></div>
+<br>
+<marquee>Press the G key on glass to change the color.</marquee>
+</body>
+</html>

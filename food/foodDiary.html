@@ -1,0 +1,271 @@
+<!-- foodDiary.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Food Log</title>
+  <style>
+        body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 50px;
+    }
+      .food-entry {
+      background-color: #424549;
+      color: white;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .food-total {
+      background-color: #424542;
+      color: white;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    #detailed-view {
+      display: none;
+      text-align: center;
+      
+    }
+    #detailed-info {
+      text-align: left;
+      margin: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      
+    }
+    #result {
+      font-weight: bold;
+      text-align: center;
+    }
+    .center-text {
+      text-align: center;
+    }
+    #back-button {
+      margin-top: 20px;
+      padding: 10px;
+      cursor: pointer;
+      background-color: #424549;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      float: center;
+    }
+
+    .navitem {
+      list-style-type:none;
+      display:inline;
+      padding: 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      margin-right: 40px;
+
+    }
+    
+    #navmenu {
+
+      background-color:#4EE2EC;
+      color:#c55e3b;
+      border-radius: 5px;
+    }
+  
+    a {
+      text-decoration: none;
+      font-size: large;
+    }
+  </style>
+</head>
+<body>
+  <h1>Food Diary</h1>
+  <nav>
+    <ul id="navmenu">
+      <li class="navitem"> <a href="food.html">Search</a> </li>
+       <li class="navitem"> <a href="foodDiary.html">Food Log</a> </li>
+     </ul></nav>
+  <div id="result"></div>
+  <div id="detailed-view">
+    <button id="back-button" onclick="goBack()">Back to Results</button>
+    <div id="detailed-info">
+  <script>
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // Function to extract query parameter values from the URL
+      function getParameterByName(name, url) {
+        // Implementation of the function goes here
+      }
+    var totalCal = 0;
+    var totalPro = 0;
+    var totalFat = 0;
+    var totalSug = 0;
+    var totalCarb = 0;
+  
+    function createFoodEntry(getter) {
+
+      var allofIt= localStorage.getItem(getter);
+      var foodd = JSON.parse(allofIt)
+      console.log(foodd);
+
+
+      var foodEntry = document.createElement('div');
+      foodEntry.classList.add('food-entry');
+
+      var foodNameElement = document.createElement('div');
+      foodNameElement.innerText = foodd[5][0];
+      foodEntry.appendChild(foodNameElement);
+
+      var caloriesElement = document.createElement('div');
+      var caloriess = foodd[0][1] * foodd[6]
+      caloriesElement.innerText = "Calories: " + caloriess + " kcal";
+      foodEntry.appendChild(caloriesElement);
+
+      var servingSizeElement = document.createElement('div');
+      if(foodd[6][0]==1){
+        servingSizeElement.innerText = foodd[6] + " Serving: " + foodd[5][1];
+      }else{
+        servingSizeElement.innerText = foodd[6] + " Servings: " + foodd[5][1];
+      }  
+      foodEntry.appendChild(servingSizeElement);
+
+
+      //getting total
+      totalCal += foodd[0][1] * foodd[6];
+      totalPro += foodd[1][1] * foodd[6];
+      totalFat += foodd[2][1] * foodd[6];
+      totalSug += foodd[3][1] * foodd[6];
+      totalCarb += foodd[4][1] * foodd[6];
+
+      foodEntry.addEventListener('click', function () {
+        var servingxx = 1;
+        displayDetailedInfo(getter);
+      });
+      return foodEntry;
+
+    }//end function createFoodEntry
+
+
+
+    function totally() {
+      var totalxx = document.createElement('div');
+      totalxx.classList.add('food-total');
+
+      var foodNameElement = document.createElement('div');
+      foodNameElement.innerText = "Total";
+      totalxx.appendChild(foodNameElement);
+
+      var caloriesElement = document.createElement('div');
+      caloriesElement.innerText = "Calories: " + totalCal + "kcal";
+      totalxx.appendChild(caloriesElement);
+
+      var caloriesElement = document.createElement('div');
+      caloriesElement.innerText = "Protein: " + totalPro + "g";
+      totalxx.appendChild(caloriesElement);
+
+      var caloriesElement = document.createElement('div');
+      caloriesElement.innerText = "Fat: " + totalFat + "g";
+      totalxx.appendChild(caloriesElement);
+
+      var caloriesElement = document.createElement('div');
+      caloriesElement.innerText = "Sugar: " + totalSug + "g";
+      totalxx.appendChild(caloriesElement);
+
+      var caloriesElement = document.createElement('div');
+      caloriesElement.innerText = "Carbs: " + totalCarb + "g";
+      totalxx.appendChild(caloriesElement);
+
+
+      return totalxx;
+
+}//end function createFoodEntry
+    
+
+  function displayDetailedInfo(getter) {
+      var detailedView = document.getElementById('detailed-view');
+      var detailedInfo = document.getElementById('detailed-info');
+      var measureDropdownContainer = document.getElementById('measureDropdownContainer');
+      var allofIt= localStorage.getItem(getter);
+      var foodd = JSON.parse(allofIt)
+      // Hide result view and show detailed view
+      document.getElementById('result').style.display = 'none';
+      detailedView.style.display = 'block';
+
+      // Generate HTML to display all information about the food
+      var html = '<div>';
+
+      if(foodd[5][0]){
+        html += '<div class="center-text" id="Title">Title</div>';
+      }
+      if(foodd[5][2]){
+        html += '<div class="center-text" id="Brand">Brand</div>';
+      }
+      if(foodd[5][1]){
+        html += '<div class="center-text" id="ServingS">Brand</div>';
+      }
+
+        html += '<div class="center-text">';
+        html += '<div id="CaloriesResult">Calories: N/A</div>';
+        html += '<div id="ProteinResult">Protein: N/A</div>';
+        html += '<div id="SugarResult">Sugars: N/A</div>';
+        html += '<div id="FatResult">Fat: N/A</div>';
+        html += '<div id="CarbohydrateResult">Carb: N/A</div>';
+        html += '</div>';
+      
+      detailedInfo.innerHTML = html;
+
+
+      if(foodd[5][0]){
+        document.getElementById("Title").innerText = foodd[5][0];
+
+      }
+      if(foodd[5][2]){
+        document.getElementById("Brand").innerText = foodd[5][2];
+      }
+      if(foodd[5][1]){
+        document.getElementById("ServingS").innerText = foodd[6] + " Servings: " + foodd[5][1];
+      }
+      // Add event listener to the dropdown
+
+      document.getElementById(foodd[0][3]).innerText = foodd[0][0] + `: ${foodd[0][1] * foodd[6]}` + foodd[0][2];
+      document.getElementById(foodd[1][3]).innerText = foodd[1][0] + `: ${foodd[1][1] * foodd[6]}` + foodd[1][2];
+      document.getElementById(foodd[2][3]).innerText = foodd[2][0] + `: ${foodd[2][1] * foodd[6]}` + foodd[2][2];
+      document.getElementById(foodd[3][3]).innerText = foodd[3][0] + `: ${foodd[3][1] * foodd[6]}` + foodd[3][2];
+      document.getElementById(foodd[4][3]).innerText = foodd[4][0] + `: ${foodd[4][1] * foodd[6]}` + foodd[4][2];
+
+
+  }
+    // Call the function to display food nutrients when the page is loaded
+    //displayFoodNutrients();
+          var resultContainer = document.getElementById('result');
+          resultContainer.innerHTML = '';
+          var counter = localStorage.getItem("counter");
+          console.log("counter: " + counter);
+          for(var p = 1; p <= counter; p++){
+            var getter = "allInfo" + p;
+            var foodEntry = createFoodEntry(getter);
+            resultContainer.appendChild(foodEntry);
+          }
+          var total = totally()
+          resultContainer.appendChild(total);            
+  });
+
+  function goBack() {
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('detailed-view').style.display = 'none';
+  }
+</script>
+  
+
+</body>
+</html>

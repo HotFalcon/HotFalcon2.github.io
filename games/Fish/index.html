@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script data-ad-client="ca-pub-3517828409778918" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<title> Menu </title>
+<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+<script>
+function start(){
+sjs.open();
+
+var bruh = new Audio('Music/bruh.mp3');
+sjs.keyDown(B_KEY,function(){
+bruh.play();
+});
+
+var oof = new Audio('Music/oof.mp3');
+sjs.keyDown(O_KEY,function(){
+oof.play();
+});
+
+var ball = new sjs.Image("Images/pizza.png");
+ball.type = "ball";
+ball.setSize(50,50);
+ball.center();
+ball.friction=-0.001;
+ball.pushUp(3);
+ball.pushRight(4);
+ball.bounce();
+
+var menu_text = new sjs.Text("MENU",28,"blue");
+menu_text.centerH();
+
+var game_text = new sjs.Text("Use the Arrow Keys to Control the Player. Only eat enemies smaller than you!",28,"#ff0");
+game_text.centerH().offset(0, 30);
+
+var startBtn = new sjs.Button("Start", function(){
+window.location = "fish";
+});
+
+startBtn.center();
+
+var info_text = new sjs.Text("Created By HotFalcon",20,"black");
+
+info_text.bottom().centerH();
+
+} //end start
+
+</script>
+</head>
+<body onload="start()"  onload="start()" style="margin:auto;background:lightgreen;">
+<h1> Fish </h1>
+
+<div id="target" style="margin:auto;background:#F87217;"></div>
+</body>
+</html>

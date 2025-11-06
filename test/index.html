@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Ticket Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <a href="ticketmaster.html" class="button">Click here for Ticketmaster Generator</a>
+    
+    <h2>FREE SeatGeek Ticket Generator</h2>
+    <img id="preview" src="images/tickets/before after.png" alt="Before and After" />
+    <dialog id="fullscreenImg">
+        <img src="images/tickets/before after.png" style="max-width: 100%; max-height: 100vh;">
+    </dialog>
+    <p><strong>Works best for Braves Tickets</strong></p>
+    <ul>
+        <li>This does not change the barcode, so the ticket can't be scanned.</li>
+        <li>Fill out the form below.</li>
+        <li>Copy the bookmark code that appears.</li>
+        <li>In Safari, create a bookmark for this page and name it <strong>Ticket Editor</strong>.</li>
+        <li>Edit the new bookmark:</li>
+        <ul>
+          <li>Delete the current URL.</li>
+          <li>Paste in the bookmark code.</li>
+          <li>Save it.</li>
+        </ul>
+        <li>Open SeatGeek.com in Safari.</li>
+        <li>Go to your tickets (where you see section, row, seat, etc.).</li>
+        <li>Tap the <strong>Ticket Editor</strong> bookmark.</li>
+        <li>The ticket info will be changed.</li>
+      </ul>
+    
+    <p><strong>Enter the details of an empty seat you'd like to move to.</strong></p>
+    <p>You can find available seats by checking unsold tickets on sites like SeatGeek, Ticketmaster, etc.</p>
+
+        <label for="platformSelect">Choose Platform:</label>
+        <select id="platformSelect" onchange="togglePlatform()">
+            <option value="seatgeek">SeatGeek</option>
+            <option value="ticketmaster">Ticketmaster</option>
+        </select>
+
+        <label>
+            <input type="checkbox" id="isBraves" onchange="toggleBravesFields()"> Braves Ticket?
+        </label>
+
+        <div id="commonFields">
+            <input type="text" id="section" placeholder="Section">
+            <input type="text" id="row" placeholder="Row">
+            <input type="text" id="seat" placeholder="First Seat">
+            <input type="text" id="sectionTitle" placeholder="Optional Section Title">
+        </div>
+
+        <div id="bravesOnlyFields" style="display:none;">
+            <input type="text" id="addedValue" placeholder="Added Value">
+            <input type="text" id="discountType" placeholder="Season Ticket / MSRP">
+        </div>
+
+        <div id="seatgeekForm">
+            <button onclick="generateSeatGeekCode()">Generate SeatGeek Bookmarklet</button>
+            <textarea id="seatgeekOutput" rows="6" readonly></textarea>
+        </div>
+
+        <div id="ticketmasterForm" style="display:none;">
+            <button onclick="generateTicketmasterCode()">Generate Ticketmaster Bookmarklet</button>
+            <textarea id="ticketmasterOutput" rows="6" readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        function togglePlatform() {
+            const val = document.getElementById("platformSelect").value;
+            document.getElementById("seatgeekForm").style.display = val === "seatgeek" ? "block" : "none";
+            document.getElementById("ticketmasterForm").style.display = val === "ticketmaster" ? "block" : "none";
+        }
+
+        function toggleBravesFields() {
+            const isBraves = document.getElementById("isBraves").checked;
+            document.getElementById("bravesOnlyFields").style.display = isBraves ? "block" : "none";
+        }
+
+        function generateSeatGeekCode() {
+            const section = document.getElementById("section").value;
+            const row = document.getElementById("row").value;
+            const seat = document.getElementById("seat").value;
+            const title = document.getElementById("sectionTitle").value;
+            const added = document.getElementById("addedValue").value;
+            const discount = document.getElementById("discountType").value;
+            const isBraves = document.getElementById("isBraves").checked;
+
+            let code = `javascript:(function(){\n`;
+            code += `console.log('SeatGeek code executed');\n`;
+            code += `var values = ['${section}','${row}','${seat}','${title}'];\n`;
+            if (isBraves) {
+                code += `var added = '${added}';\n`;
+                code += `var discount = '${discount}';\n`;
+            }
+            code += `})();`;
+            document.getElementById("seatgeekOutput").value = code;
+        }
+
+        function generateTicketmasterCode() {
+            const section = document.getElementById("section").value;
+            const row = document.getElementById("row").value;
+            const seat = document.getElementById("seat").value;
+
+            let code = `javascript:(function(){\n`;
+            code += `var stuff = document.querySelectorAll('div[class*="styles__locationData"]');\n`;
+            code += `for (var i = 0; i < stuff.length; i++) {\n`;
+            code += `  var ticketDivs = stuff[i].querySelectorAll('div');\n`;
+            code += `  if (ticketDivs.length >= 3) {\n`;
+            code += `    ticketDivs[0].innerText = '${section}';\n`;
+            code += `    ticketDivs[1].innerText = '${row}';\n`;
+            code += `    ticketDivs[2].innerText = ${parseInt(seat)} + i;\n`;
+            code += `  }\n}`;
+            code += `})();`;
+            document.getElementById("ticketmasterOutput").value = code;
+        }
+    </script>
+</body>
+</html>

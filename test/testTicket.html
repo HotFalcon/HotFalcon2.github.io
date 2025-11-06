@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FREE SeatGeek Ticket Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: 95%;
+            padding: 10px;
+            margin: 5px 0 20px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        textarea {
+            width: 95%;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+        .slidecontainer {
+        width: 100%;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #04AA6D;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #04AA6D;
+            cursor: pointer;
+        }
+        .icon{
+        height: 45px;
+        width: 45px;
+        padding-right:10px;
+    }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>FREE SeatGeek Ticket Generator</h2>
+    <p>This does not change the barcode and therfore cannot be scanned seccessfully.
+        Complete this form below then copy the bookmark code and then create a bookmark in the safari app of this webpage and call it ticket editor, 
+        then edit the bookmark, delete the old url, then paste in the
+         bookmark code, then save it. Next, open Seatgeek on safari, open the tickets to where you see the section and all the other details,
+         then open the bookmark called ticket editor and see that the tickets are different.
+    </p>
+    <a href="https://img.mlbstatic.com/mlb-images/image/upload/q_auto/mlb/nnxfivmguyee8tmcvf2b" target="_blank">Braves Seating Chart</a> 
+    <p>Enter the number of tickets:</p>
+    <input type="text" id="ticketCount" placeholder="Number of Tickets">
+
+    <p>Enter the values for the elements:</p>
+    <input type="text" id="value0" placeholder="Section Number">
+    <input type="text" id="value1" placeholder="Row Number">
+    <input type="text" id="value2" placeholder="First Seat Number">
+    <input type="text" id="value3" placeholder="Section Title (e.g., Lexus Reserved)">
+    <div class="slidecontainer">
+        <input type="range" min="0" max="10" value="5" class="slider" id="myRange">
+        <p>Amount of Loaded Value: $<span id="demo"></span></p>
+      </div>
+      <label> MB$A-List Discount? </label>
+      <form class="form-inline" id="radiobtns">
+        <label> Yes: </label>
+        <input type="radio" name="icon">
+        <label> No: </label>
+        <input type="radio" name="icon">
+    </form>
+    <button onclick="generateBookmarklet()">Generate Bookmarklet Code</button>
+    <textarea id="bookmarkletCode" rows="10" readonly></textarea>
+    <button id="copyButton" onclick="copyToClipboard()">Copy to Clipboard</button>
+</div>
+
+<script>
+var added_value = 0
+var slider = document.getElementById("myRange");
+var output = document.getElementById("demo");
+output.innerHTML = slider.value;
+this.value = 25
+output.innerHTML = this.value
+slider.oninput = function() {
+    output.innerHTML = this.value * 5;
+    
+    added_value = output.innerHTML
+    
+
+
+}
+console.log("start")
+var radio_choice = false;
+
+function generateBookmarklet() {
+
+    var icons = document.querySelectorAll("[name='icon']");
+    for(var i=0; i < icons.length; i++){
+    if(icons[i].checked == true){
+    radio_choice = true;
+    console.log("yes");
+    break;
+    } else {
+    radio_choice = false;
+    console.log("no");
+    break;
+    }
+    }//end icons
+
+
+
+    var ticketCount = parseInt(document.getElementById('ticketCount').value);
+    var values = [];
+    for (var i = 0; i < 4; i++) {
+        values.push(document.getElementById('value' + i).value);
+    }
+
+    var cases = '';
+    for (var i = 0; i < ticketCount; i++) {
+       
+        cases += `
+        case ${i*3}:
+            el.innerText = '${values[0]}';
+            break;
+        case ${i*3 + 1}:
+            el.innerText = '${values[1]}'; 
+            break;
+        case ${i*3 + 2}:
+            el.innerText = '${parseInt(values[2])+i}'; 
+            break;
+        `;
+    }
+
+    var bookmarkletCode = `
+javascript:(function(){ 
+    var added_value = ${added_value};
+    var discounted = ${radio_choice};
+    var elements500 = document.querySelectorAll('p[data-uniform-id="typography-subtitle"]');
+    elements500.forEach(function(el, index) {
+        switch(index) {
+            ${cases}
+            default:
+                el.innerText = 'Default Value';
+        }
+    });
+    
+
+    var ticketCount = ${ticketCount}; 
+    for (var i = 0; i < ticketCount; i++) {
+        var index = 8 + (i * 9); 
+        var labelledLists = document.querySelectorAll('div[class*="LabelledList"]');
+        
+        if (labelledLists.length <= index) {
+            console.error("LabelledList not found for index:", index);
+            continue;
+        }
+
+        var parentList = labelledLists[index];
+        console.log("Labelled List at index", index, labelledLists[index]);
+
+        
+        var firstItem = parentList.querySelector('div:first-child');
+        if (!firstItem) {
+            console.error("No ExtendedListItem found in the labelled list at index", index);
+            continue;
+        }
+
+        var itemClass = firstItem.className;
+        console.log(firstItem)
+        var labelClass = firstItem.querySelector('div[class*="ExtendedTicketMetaLabel"]').className;
+        var valueClass = firstItem.querySelector('div[class*="ExtendedTicketMetaValue"]').className;
+        var lineClass = firstItem.querySelector('div[class*="ExtendedTicketMetaLabel"] div').className;
+
+        var closeButtons = document.querySelectorAll('button[data-testid="close-ticket"]');
+        closeButtons.forEach(function(button) {
+            button.disabled = true;
+        });
+        
+        var valueDivHTML = "<div class='" + itemClass + "'>" +
+                                "    <div class='" + labelClass + "'>" +
+                                "        <div class='" + lineClass + "'></div>" +
+                                "    </div>" +
+                                "    <div class='" + valueClass + "'>" +
+                                "        " + '$${added_value} Added Value' +
+                                "    </div>" +
+                                "</div>";
+
+        var discountedDivHTML = "<div class='" + itemClass + "'>" +
+                                "    <div class='" + labelClass + "'>" +
+                                "        <div class='" + lineClass + "'></div>" +
+                                "    </div>" +
+                                "    <div class='" + valueClass + "'>" +
+                                "        " + 'MB$A-List Discount' +
+                                "    </div>" +
+                                "</div>";
+
+        var additionalDivHTML = "<div class='" + itemClass + "'>" +
+                                "    <div class='" + labelClass + "'>" +
+                                "        <div class='" + lineClass + "'></div>" +
+                                "    </div>" +
+                                "    <div class='" + valueClass + "'>" +
+                                "        " + '${values[3]}' +
+                                "    </div>" +
+                                "</div>";
+
+       
+        parentList.innerHTML = '';
+        if(added_value > 0){
+            parentList.insertAdjacentHTML('beforeend', valueDivHTML);
+        }
+        console.log(disounted)
+        if(discounted = "True"){
+            parentList.insertAdjacentHTML('beforeend', discountedDivHTML);
+        }
+        
+        parentList.insertAdjacentHTML('beforeend', additionalDivHTML);
+    }
+
+})();`;
+
+    document.getElementById('bookmarkletCode').value = bookmarkletCode.trim();
+}
+
+function copyToClipboard() {
+    var copyText = document.getElementById("bookmarkletCode");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // For mobile devices
+
+    document.execCommand("copy");
+
+    alert("Bookmarklet code copied to clipboard!");
+}
+
+
+
+/*
+javascript:(function(){
+})();`;
+*/
+</script>
+
+</body>
+</html>

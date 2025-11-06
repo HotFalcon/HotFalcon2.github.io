@@ -1,0 +1,139 @@
+DO;
+
+GETSLOTITEM(4,&whichgame);
+
+if(&whichgame="bookshelf");
+
+    //memory of enchanted block
+    GETSLOTITEM(49,&timer);
+
+    //finding out
+    if(&timer="glowstone");
+    
+    
+     
+        GETSLOT("stained_hardened_clay",#one,9);log(%#one%);
+        GETSLOTITEM(49,&timer);if(&timer="glowstone");
+        
+    GETSLOT("stained_hardened_clay",#two,9);
+        GETSLOTITEM(49,&timer);if(&timer="glowstone");
+        wait(400ms);GETSLOT("stained_hardened_clay",#three,9);
+        GETSLOTITEM(49,&timer);if(&timer="glowstone");
+        wait(800ms);GETSLOT("stained_hardened_clay",#four,9);
+        GETSLOTITEM(49,&timer);if(&timer="glowstone");
+        wait(800ms);GETSLOT("stained_hardened_clay",#five,9);
+        GETSLOTITEM(49,&timer);if(&timer="glowstone");
+        wait(800ms);GETSLOT("stained_hardened_clay",#six,9);
+        GETSLOTITEM(49,&timer);if(&timer="glowstone");
+        wait(800ms);GETSLOT("stained_hardened_clay",#seven,9);
+        GETSLOTITEM(49,&timer);if(&timer="glowstone");
+    
+    
+    
+        endif
+        endif
+        endif
+        endif
+        endif
+        endif
+        endif
+
+    endif
+    
+    if(&timer="clock");
+    wait(100ms);
+        log(clock);
+    log(%#one%);
+        SLOTCLICK(%#one%);
+        if(%#two% > 1);wait(500ms);SLOTCLICK(%#two%);
+        if(%#three% > 1);wait(500ms);SLOTCLICK(%#three%);
+        if(%#four% > 1);wait(500ms);SLOTCLICK(%#four%);
+        if(%#five% > 1);wait(500ms);SLOTCLICK(%#five%);    
+        if(%#six% > 1);wait(500ms);SLOTCLICK(%#six%);
+        if(%#seven% > 1);wait(500ms);SLOTCLICK(%#seven%);
+        if(%#eight% > 1);wait(500ms);SLOTCLICK(%#eight%);
+        if(%#nine% > 1);wait(500ms);SLOTCLICK(%#nine%);
+        if(%#ten% > 1);wait(500ms);SLOTCLICK(%#ten%);
+        if(%#eleven% > 1);wait(500ms);SLOTCLICK(%#eleven%);
+        if(%#twelve% > 1);wait(500ms);SLOTCLICK(%#twelve%);
+        if(%#thirteen% > 1);wait(500ms);SLOTCLICK(%#thirteen%);
+    
+        endif
+        endif
+        endif
+        endif
+        endif
+        endif
+        endif
+        endif
+        endif
+        endif
+        endif
+        endif
+    
+    endif
+    
+endif
+if(&whichgame="stained_glass_pane");
+
+    //find 10 dyes
+    GETSLOTITEM(49,&timer);
+    
+    if(&timer="glowstone");
+        //log(finding dyes);
+    
+        //geting slots of dyes
+        GETSLOT("dye:15",#one,9); 
+        GETSLOT("dye:12",#two,9); 
+        GETSLOT("dye:4",#three,9);
+        GETSLOT("dye:5",#four,9);
+        GETSLOT("dye:13",#five,9);
+        GETSLOT("dye:9",#six,9);
+        GETSLOT("dye:1",#seven,9);
+        GETSLOT("dye:14",#eight,9);
+        GETSLOT("dye:11",#nine,9);
+            
+    endif
+
+    if(&timer="clock");
+        //log(clicking time);
+        wait(300ms);
+        SLOTCLICK(%#one%);
+        wait(500ms);       
+        if(%#two% > 1);
+        SLOTCLICK(%#two%);wait(500ms);        
+            if(%#three% > 1);            
+            SLOTCLICK(%#three%);wait(500ms);
+                if(%#four% > 1);                
+                SLOTCLICK(%#four%);wait(500ms);
+                    if(%#five% > 1);                  
+                    SLOTCLICK(%#five%);wait(500ms);
+                        if(%#six% > 1);                      
+                        SLOTCLICK(%#six%);wait(500ms);
+                            if(%#seven% > 1);
+                            SLOTCLICK(%#seven%);wait(500ms);
+                                if(%#eight% > 1);                               
+                                SLOTCLICK(%#eight%);wait(500ms);
+                                    if(%#nine% > 1);
+                                    SLOTCLICK(%#nine%);wait(1000ms);
+                                    key(inventory);
+                                    wait(500ms);
+                                    SLOTCLICK(11,"left")
+                                    endif
+                                endif
+                            endif
+                        endif
+                    endif
+                endif
+            endif
+        endif
+        
+
+    endif
+
+
+endif
+LOOP;
+
+//GETSLOT("glowstone",#find,9)
+  //log(%#find%)
