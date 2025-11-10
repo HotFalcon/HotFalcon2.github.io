@@ -1,0 +1,28 @@
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Red circle background (YouTube red) -->
+  <circle cx="150" cy="150" r="140" fill="#FF0000"/>
+
+  <!-- White music note -->
+  <g fill="#FFFFFF">
+    <!-- Note stem -->
+    <rect x="170" y="80" width="12" height="100" rx="2"/>
+
+    <!-- Note head -->
+    <ellipse cx="164" cy="175" rx="20" ry="15" transform="rotate(-20 164 175)"/>
+
+    <!-- Top bar -->
+    <rect x="130" y="80" width="52" height="12" rx="6"/>
+
+    <!-- Second note stem -->
+    <rect x="130" y="80" width="12" height="80" rx="2"/>
+
+    <!-- Second note head -->
+    <ellipse cx="124" cy="155" rx="20" ry="15" transform="rotate(-20 124 155)"/>
+  </g>
+
+  <!-- Play button overlay -->
+  <g transform="translate(200, 210)">
+    <circle cx="0" cy="0" r="35" fill="#FF0000" opacity="0.9"/>
+    <polygon points="-10,-15 -10,15 15,0" fill="#FFFFFF"/>
+  </g>
+</svg>

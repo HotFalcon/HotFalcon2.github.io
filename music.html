@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player - HotFalcon's Website</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="images/icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/icon/favicon-16x16.png">
+    <link rel="stylesheet" href="css/music-player.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/" class="back-button">← Back to Home</a>
+            <h1>
+                <svg class="music-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" fill="currentColor"/>
+                </svg>
+                Music Player
+            </h1>
+        </header>
+
+        <div class="player-card">
+            <div class="input-section">
+                <input
+                    type="text"
+                    id="playlistInput"
+                    placeholder="Enter YouTube playlist URL or video URL"
+                    value="https://www.youtube.com/playlist?list=PLvpM7pMoGFywbYqyaVLqdcJ6o0FX83tkN"
+                />
+                <button id="loadPlaylist" class="load-btn">Load Playlist</button>
+            </div>
+
+            <div id="videoInfo" class="video-info">
+                <img id="thumbnail" class="thumbnail" src="" alt="Video thumbnail" style="display: none;">
+                <h2 id="videoTitle">Enter a playlist to start</h2>
+                <p id="channelName"></p>
+            </div>
+
+            <div id="playerContainer" style="display: none;">
+                <div id="player"></div>
+            </div>
+
+            <div class="controls">
+                <button id="prevBtn" class="control-btn" disabled>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                    </svg>
+                </button>
+                <button id="playPauseBtn" class="control-btn play-btn" disabled>
+                    <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                        <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                    </svg>
+                </button>
+                <button id="nextBtn" class="control-btn" disabled>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                    </svg>
+                </button>
+                <button id="shuffleBtn" class="control-btn" disabled>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="volume-control">
+                <svg class="volume-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                </svg>
+                <input type="range" id="volumeSlider" min="0" max="100" value="50">
+                <span id="volumeValue">50%</span>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+                <div class="time-info">
+                    <span id="currentTime">0:00</span>
+                    <span id="duration">0:00</span>
+                </div>
+            </div>
+
+            <div id="playlistInfo" class="playlist-info" style="display: none;">
+                <p><strong>Playlist:</strong> <span id="playlistTitle"></span></p>
+                <p><strong>Videos:</strong> <span id="videoCount">0</span></p>
+                <p><strong>Current:</strong> <span id="currentIndex">0</span></p>
+            </div>
+        </div>
+
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+    </div>
+
+    <script src="js/music-player.js"></script>
+</body>
+</html>
