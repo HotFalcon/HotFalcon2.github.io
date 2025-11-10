@@ -2,13 +2,25 @@
 list-style-type:none;
 display:inline;
 margin-right:.3em;
-padding:2px 5px;
+padding:8px 15px;
+}
+
+.navitem a {
+color: #ffffff;
+font-weight: bold;
+transition: opacity 0.3s;
+}
+
+.navitem a:hover {
+opacity: 0.8;
 }
     
 #navmenu {
 text-align:center;
-background-color:#4EE2EC;
-color:#c55e3b;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+color:#ffffff;
+padding: 10px 0;
+border-radius: 8px;
 }
     
 h1 {
@@ -16,6 +28,8 @@ text-align:center;
 font-family: 'minecraft', Arial, sans-serif;
 font-weight:normal;
 font-style:normal;
+color: #ffffff;
+text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
 }
 
 
@@ -25,13 +39,15 @@ text-decoration:none
 
 p {
 text-align:center;
-color: rgb(228, 147, 203);
+color: #ffffff;
 font-family: 'minecraft', Arial, sans-serif;
 font-weight:normal;
 font-style:normal;
+text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 body {
 margin:auto;
-background:radial-gradient(circle at 100% 100%, rgba(235, 68, 95, 0.856), rgba(209, 90, 110, 0.185));
+background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+min-height: 100vh;
 } 
