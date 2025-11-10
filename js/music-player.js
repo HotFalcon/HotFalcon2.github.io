@@ -4,6 +4,8 @@ let playlist = [];
 let currentVideoIndex = 0;
 let isShuffled = false;
 let originalPlaylist = [];
+let apiReady = false;
+let progressInterval = null;
 
 // Load YouTube IFrame API
 const tag = document.createElement('script');
@@ -14,16 +16,28 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 // This function will be called when the API is ready
 function onYouTubeIframeAPIReady() {
     console.log('YouTube IFrame API is ready');
+    apiReady = true;
+    const loadButton = document.getElementById('loadPlaylist');
+    loadButton.disabled = false;
+    loadButton.textContent = 'Load Playlist';
 }
 
 // Extract playlist or video ID from URL
 function extractId(url) {
-    const playlistMatch = url.match(/[?&]list=([^&]+)/);
+    // Try to match playlist first
+    const playlistMatch = url.match(/[?&]list=([^&#]+)/);
     if (playlistMatch) {
         return { type: 'playlist', id: playlistMatch[1] };
     }
 
-    const videoMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?]+)/);
+    // Match various YouTube video URL formats
+    let videoMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+
+    // Also try to match v parameter anywhere in the URL
+    if (!videoMatch) {
+        videoMatch = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+    }
+
     if (videoMatch) {
         return { type: 'video', id: videoMatch[1] };
     }
@@ -43,6 +57,11 @@ function shuffleArray(array) {
 
 // Load playlist or video
 document.getElementById('loadPlaylist').addEventListener('click', function() {
+    if (!apiReady) {
+        showError('YouTube API is still loading, please wait...');
+        return;
+    }
+
     const url = document.getElementById('playlistInput').value.trim();
 
     if (!url) {
@@ -82,16 +101,46 @@ function loadYouTubeContent(extracted) {
         playerVars.listType = 'playlist';
     }
 
-    player = new YT.Player('player', {
-        height: '390',
-        width: '640',
-        videoId: extracted.type === 'video' ? extracted.id : undefined,
-        playerVars: playerVars,
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
-    });
+    try {
+        player = new YT.Player('player', {
+            height: '390',
+            width: '640',
+            videoId: extracted.type === 'video' ? extracted.id : undefined,
+            playerVars: playerVars,
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange,
+                'onError': onPlayerError
+            }
+        });
+    } catch (error) {
+        showError('Failed to load video: ' + error.message);
+        console.error('Player creation error:', error);
+    }
+}
+
+// Player error event
+function onPlayerError(event) {
+    let errorMessage = 'An error occurred while loading the video.';
+
+    switch(event.data) {
+        case 2:
+            errorMessage = 'Invalid video ID. Please check the URL.';
+            break;
+        case 5:
+            errorMessage = 'HTML5 player error. Try a different browser.';
+            break;
+        case 100:
+            errorMessage = 'Video not found or has been removed.';
+            break;
+        case 101:
+        case 150:
+            errorMessage = 'Video cannot be embedded. Try opening it directly on YouTube.';
+            break;
+    }
+
+    showError(errorMessage);
+    console.error('Player error:', event.data);
 }
 
 // Player ready event
@@ -111,8 +160,11 @@ function onPlayerReady(event) {
     // Update video info
     updateVideoInfo();
 
-    // Start progress update interval
-    setInterval(updateProgress, 1000);
+    // Clear any existing progress interval and start a new one
+    if (progressInterval) {
+        clearInterval(progressInterval);
+    }
+    progressInterval = setInterval(updateProgress, 1000);
 
     // Try to get playlist info
     try {
