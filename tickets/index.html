@@ -51,26 +51,35 @@
         <dialog id="fullscreenImg">
             <img src="before after.png" style="max-width: 100%; max-height: 100vh;">
         </dialog>
+        <h3>How It Works:</h3>
         <ul>
-            <li>You must buy real tickets before you use this</li>
-            <li>This does not change the barcode, so the ticket can't be scanned.</li>
-            <li>Fill out the form below.</li>
-            <li>Copy the bookmark code that appears.</li>
-            <li>In Safari, create a bookmark for this page and name it <strong>Ticket Editor</strong>.</li>
-            <li>Edit the new bookmark:</li>
-            <ul>
-                <li>Delete the current URL.</li>
-                <li>Paste in the bookmark code.</li>
-                <li>Save it.</li>
-            </ul>
-            <li>Open SeatGeek.com in Safari.</li>
-            <li>Go to your tickets (where you see section, row, seat, etc.).</li>
-            <li>Tap the <strong>Ticket Editor</strong> bookmark.</li>
-            <li>The ticket info will be changed.</li>
+            <li><strong>Important:</strong> You must already own real tickets to use this tool.</li>
+            <li><strong>Warning:</strong> This only changes how the ticket looks on screen. The barcode remains unchanged and will still scan for your original seat.</li>
         </ul>
-    
-        <p><strong>Enter the details of an empty seat you'd like to move to.</strong></p>
-        <p>You can find available seats by checking unsold tickets on sites like SeatGeek, Ticketmaster, etc.</p>
+
+        <h3>Setup Instructions:</h3>
+        <ol>
+            <li><strong>Fill out the form below</strong> with the seat details you want to display (section, row, seat number).</li>
+            <li><strong>Click "Generate Bookmarklet"</strong> to create your custom code.</li>
+            <li><strong>Copy the code</strong> that appears in the text box.</li>
+            <li><strong>In Safari:</strong>
+                <ul>
+                    <li>Create a new bookmark for this page.</li>
+                    <li>Name it <strong>"Ticket Editor"</strong>.</li>
+                    <li>Edit the bookmark and replace the URL with the code you copied.</li>
+                    <li>Save it.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>How to Use:</h3>
+        <ol>
+            <li>Open your ticket on SeatGeek or Ticketmaster in Safari.</li>
+            <li>Tap the <strong>Ticket Editor</strong> bookmark you created.</li>
+            <li>The displayed seat information will update instantly.</li>
+        </ol>
+
+        <p><strong>Tip:</strong> Find available seat numbers by browsing unsold tickets on SeatGeek or Ticketmaster to see what sections and rows are empty.</p>
 
         <label for="platformSelect">Choose Platform:</label>
         <select id="platformSelect" onchange="togglePlatform()">
