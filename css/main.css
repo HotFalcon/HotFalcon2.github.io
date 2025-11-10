@@ -50,4 +50,84 @@ body {
 margin:auto;
 background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
 min-height: 100vh;
-} 
+padding: 10px;
+box-sizing: border-box;
+}
+
+/* Make links inside h1 tags white */
+a h1 {
+color: #ffffff !important;
+}
+
+/* Responsive image sizing */
+img {
+max-width: 100%;
+height: auto;
+display: block;
+}
+
+/* Mobile responsive design */
+@media screen and (max-width: 768px) {
+/* Stack navigation items vertically on mobile */
+.navitem {
+display: block;
+margin: 5px 0;
+padding: 10px;
+text-align: center;
+}
+
+#navmenu {
+padding: 5px 0;
+}
+
+/* Make h1 headings smaller on mobile */
+h1 {
+font-size: 1.5em;
+margin: 10px 0;
+}
+
+/* Ensure all divs stack vertically on mobile */
+div[style*="float:left"] {
+float: none !important;
+margin: 1em auto !important;
+max-width: 300px;
+}
+
+/* Make images responsive */
+img {
+max-width: 100%;
+width: 100%;
+height: auto;
+}
+
+/* Adjust body padding for mobile */
+body {
+padding: 5px;
+}
+
+/* Make paragraphs more readable on mobile */
+p {
+font-size: 1em;
+padding: 0 10px;
+}
+}
+
+/* Tablet responsive design */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+.navitem {
+padding: 8px 10px;
+margin-right: 0.2em;
+}
+
+h1 {
+font-size: 2em;
+}
+
+div[style*="float:left"] {
+margin: 0.5em !important;
+}
+
+img {
+max-width: 250px;
+}
+}
