@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLB Game Simulator</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="../../images/icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../images/icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../images/icon/favicon-16x16.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .team-select {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .team-box {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            min-width: 250px;
+        }
+
+        .team-box h3 {
+            margin-bottom: 10px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background: white;
+            color: #333;
+        }
+
+        .start-game {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 18px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #ff8555;
+            transform: scale(1.05);
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .scoreboard {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .scoreboard.active {
+            display: block;
+        }
+
+        .score-header {
+            display: grid;
+            grid-template-columns: 200px repeat(9, 1fr) 80px 80px 80px;
+            gap: 5px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .score-row {
+            display: grid;
+            grid-template-columns: 200px repeat(9, 1fr) 80px 80px 80px;
+            gap: 5px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+
+        .team-name {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .game-state {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .state-box {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .diamond {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .base {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            transform: rotate(45deg);
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .base.occupied {
+            background: #ff6b35;
+        }
+
+        .base-label {
+            transform: rotate(-45deg);
+            font-weight: bold;
+        }
+
+        .outs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .out-indicator {
+            width: 40px;
+            height: 40px;
+            border: 3px solid white;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .out-indicator.active {
+            background: #ff3333;
+        }
+
+        .play-log {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .play-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            border-left: 4px solid #ff6b35;
+        }
+
+        .play-item.important {
+            background: rgba(255,107,53,0.3);
+            border-left-color: #ffeb3b;
+        }
+
+        .current-batter {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255,107,53,0.2);
+            border-radius: 5px;
+        }
+
+        .stats {
+            font-size: 14px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .game-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .score-header, .score-row {
+                font-size: 12px;
+                grid-template-columns: 100px repeat(9, 40px) 50px 50px 50px;
+            }
+
+            .game-state {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚾ MLB Game Simulator</h1>
+
+        <div id="teamSelection">
+            <div class="team-select">
+                <div class="team-box">
+                    <h3>Away Team</h3>
+                    <select id="awayTeam">
+                        <option value="">Select Team...</option>
+                    </select>
+                </div>
+                <div class="team-box">
+                    <h3>Home Team</h3>
+                    <select id="homeTeam">
+                        <option value="">Select Team...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="start-game">
+                <button id="startBtn" onclick="startGame()">Start Game</button>
+            </div>
+        </div>
+
+        <div id="gameArea" style="display: none;">
+            <div class="scoreboard" id="scoreboard">
+                <div class="score-header">
+                    <div>Team</div>
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>5</div>
+                    <div>6</div>
+                    <div>7</div>
+                    <div>8</div>
+                    <div>9</div>
+                    <div>R</div>
+                    <div>H</div>
+                    <div>E</div>
+                </div>
+                <div class="score-row" id="awayScore"></div>
+                <div class="score-row" id="homeScore"></div>
+            </div>
+
+            <div class="game-state">
+                <div class="state-box">
+                    <h3>Current Situation</h3>
+                    <div class="current-batter" id="currentBatter"></div>
+                    <div class="diamond">
+                        <div></div>
+                        <div class="base" id="base2"><span class="base-label">2</span></div>
+                        <div></div>
+                        <div class="base" id="base3"><span class="base-label">3</span></div>
+                        <div></div>
+                        <div class="base" id="base1"><span class="base-label">1</span></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <div class="outs">
+                        <div class="out-indicator" id="out1"></div>
+                        <div class="out-indicator" id="out2"></div>
+                        <div class="out-indicator" id="out3"></div>
+                    </div>
+                </div>
+
+                <div class="state-box">
+                    <h3>Game Info</h3>
+                    <div style="font-size: 24px; margin: 20px 0;">
+                        <div id="inningDisplay"></div>
+                        <div style="margin-top: 10px;" id="countDisplay"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-controls">
+                <button onclick="nextPlay()" id="nextPlayBtn">Next Play ⚾</button>
+                <button onclick="autoPlay()" id="autoPlayBtn">Auto Play ▶</button>
+                <button onclick="newGame()" id="newGameBtn">New Game 🔄</button>
+            </div>
+
+            <div class="play-log">
+                <h3>Play-by-Play</h3>
+                <div id="playLog"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="mlb-sim.js"></script>
+</body>
+</html>
