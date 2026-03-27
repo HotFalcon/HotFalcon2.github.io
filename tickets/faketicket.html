@@ -175,10 +175,8 @@
                 let row = '${row}';
                 let ticketCount = ${ticketCount};
 
-                // 1. Find the parent div with the specific class
                 let ticketMeta = document.querySelector('div[class*="TicketSwiperCard__TicketMetaWrapper"]');
 
-                // 2. Check if the element exists before trying to select inside it
                 if (ticketMeta) {
 
                     let sectionHeader = ticketMeta.querySelector('[data-uniform-id="typography-heading3"]');
