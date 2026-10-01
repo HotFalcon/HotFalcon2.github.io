@@ -188,7 +188,7 @@ button { cursor: pointer; }
 
 .w-content { position: relative; isolation: isolate; flex: 1; overflow-y: auto; overflow-x: hidden; padding: 12px 0 40px; scrollbar-width: none; overscroll-behavior: contain; }
 .w-content::-webkit-scrollbar { display: none; }
-.w-content.locked { overflow: hidden; }
+.w-content.locked { overflow-x: hidden; overflow-y: auto; }
 
 .w-empty { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 40px 60px; gap: 6px; animation: fade .4s; }
 .w-empty svg { width: 72px; height: 72px; margin-bottom: 8px; }
@@ -212,6 +212,7 @@ button { cursor: pointer; }
 .w-card .pass-wrap { transition: transform .2s ease; }
 .screen:not(.is-open) .w-card:active .pass-wrap { transform: scale(.985); }
 .w-card.is-open { cursor: default; touch-action: none; }
+.w-card.is-parked { height: 80px; overflow: hidden; }
 .w-card.removing { opacity: 0; pointer-events: none; }
 .w-dots { position: absolute; left: 0; right: 0; top: 0; z-index: 950; display: flex; justify-content: center; align-items: center; gap: 9px; height: 8px; pointer-events: none; opacity: 0; transition: opacity .3s, transform .55s var(--spring); }
 .w-dots.show { opacity: 1; }

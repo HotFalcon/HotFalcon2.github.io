@@ -57,13 +57,11 @@ Rules that apply to all styles:
 - Voided passes fade the barcode. Voided and expired notes appear in Pass Details.
 - Edited passes retain the original barcode. Unverified files still hide their barcode and show an "Unverified pass" panel on the card face (see Editing below).
 
-## The back of the pass
-
-### Contactless event tickets
+## Contactless event tickets
 
 Imported event tickets with original `nfc` metadata use the compact reader presentation: a wide shallow notch, proportionally sized header and fields, issuer icon, contactless symbol, and a looping SVG/CSS **Hold Near Reader** animation. The animation respects reduced-motion preferences. The viewer does not transmit NFC or authenticate tickets; contactless entry still requires the original ticket in Apple Wallet. Unverified and voided passes do not activate this presentation.
 
-Tap the open card to reveal **Done** and **Pass Details**, or swipe down to return to the collection. Neighboring contactless tickets peek in from the side; other saved cards appear at the bottom when space allows. Field values shrink to fit, then wrap when necessary. Barcode-only passes keep their existing layout. Use Add to Home Screen for the full-screen presentation; Safari's toolbar and the iPhone's system UI remain controlled by iOS.
+Tap the open card to reveal **Done** and **Pass Details**, or swipe down to return to the collection. Neighboring tickets in the same group peek in from the side; other saved cards remain stacked below the reader. Field values shrink to fit, then wrap when necessary. Barcode-only passes keep their existing card layout. Use Add to Home Screen for the full-screen presentation; Safari's toolbar and the iPhone's system UI remain controlled by iOS.
 
 ## The back of the pass
 
@@ -84,9 +82,9 @@ Since iOS 16, tapping **•••** opens a "Pass Details" sheet instead of flip
 - **Several files at once:** pick or drop any number of `.pkpass` / `.pkpasses` files. Bundles are split into separate passes. A pass whose `passTypeIdentifier` + `serialNumber` is already saved is skipped, which is how Wallet treats repeats.
 - **Order:** newest event first. The date comes from `relevantDate`, then `relevantDates[0]`, then the first date-formatted field, then `expirationDate`, then the date it was added.
 - **Stack:** cards overlap so each shows its top 62 px (logo, name and header fields), and the last card is fully visible, like Wallet. The cards are positioned with `transform` and ordered by `z-index`, never by moving DOM nodes, because moving a node cancels its CSS transition.
-- **Opening a pass:** the tapped card springs to the top, and the rest slide down out of view so only the open pass and its page dots show. The title turns into **Done** and **•••**. Tap Done, or swipe the card down (more than 110 px), to put it back.
-- **Flipping between passes:** with a pass open, swipe left for the next pass in the collection or right for the previous one. On desktop, drag with the mouse or use the ← → keys.
-  - Page dots under the card show your place. Long collections show a sliding window of 9 dots, with smaller dots at the ends.
+- **Opening a pass:** the tapped card springs to the top. Related passes form its swipe group; unrelated passes remain in a compact stack below it. Tap a lower card to open its group. On short screens, scroll to reach the lower stack. The title turns into **Done** and **•••**. Tap Done, or swipe the card down (more than 110 px), to put it back.
+- **Flipping between passes:** with a pass open, swipe left or right within its group. On desktop, drag with the mouse or use the ← → keys. Samples group only with copies of the same sample. Imported passes group by original issuer, pass style, and `groupingIdentifier` when supplied. Event tickets without an explicit group use their original event name/description and date; tickets lacking those stay separate. Other pass styles group by issuer and style. Display edits do not change group membership.
+  - Page dots and reader side previews use the same group. A single pass has no dots. Large groups show a sliding window of 9 dots, with smaller dots at the ends.
   - A swipe commits once it passes 25% of the card width, or on a quick flick. Otherwise the card springs back.
   - At the first or last pass, the card rubber-bands instead of moving.
   - The first move decides the direction: mostly sideways means flip, mostly down means close.

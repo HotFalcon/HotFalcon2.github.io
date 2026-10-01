@@ -1008,6 +1008,31 @@
 
   // ---------- The stack ----------
 
+  // Group by original issuer metadata so display edits do not move a pass.
+  // Samples never join imported passes, even when their styles match.
+  function swipeGroupKey(it) {
+    if (it.entry.source === 'sample') return JSON.stringify(['sample', it.entry.sample]);
+    const pass = it.b.original;
+    const style = styleOf(pass);
+    const issuer = pass.passTypeIdentifier || pass.organizationName || it.entry.id;
+    let group = ['issuer'];
+    if (typeof pass.groupingIdentifier === 'string' && pass.groupingIdentifier.trim()) {
+      group = ['group', pass.groupingIdentifier];
+    } else if (style === 'eventTicket') {
+      const event = pass.semantics?.eventName || pass.description;
+      const date = passDate(pass);
+      // Without an event name and date, keep unrelated tickets separate.
+      group = event && date ? ['event', event, date] : ['pass', pass.serialNumber || it.entry.id];
+    }
+    return JSON.stringify(['file', style, issuer, ...group]);
+  }
+
+  function swipeItems() {
+    if (!openItem) return [];
+    const key = swipeGroupKey(openItem);
+    return items.filter((it) => swipeGroupKey(it) === key);
+  }
+
   const PEEK = 62;
   const dots = el('div', 'w-dots');
   dots.setAttribute('aria-hidden', 'true');
@@ -1042,9 +1067,13 @@
     screen.classList.toggle('is-reader', contactless);
     reader.hidden = !contactless;
     if (!n) return;
+    const pages = swipeItems();
+    const pageIndex = pages.indexOf(openItem);
+    items.forEach((it) => it.wrap.classList.toggle('is-parked', !!openItem && !pages.includes(it)));
     fitContactlessFields();
     const base = scroller.scrollTop - stack.offsetTop;
     const viewH = scroller.clientHeight;
+    const pileStart = openItem ? Math.max(base + viewH - 82, base + 10 + openItem.wrap.offsetHeight + (contactless ? 185 : 50)) : 0;
     let pile = 0;
     items.forEach((it, i) => {
       let y;
@@ -1052,34 +1081,35 @@
       let x = 0;
       if (!openItem) { y = i * PEEK; z = i + 1; }
       else if (it === openItem) { y = base + 10; z = 900; }
-      else if (contactless && hasContactless(it.b) && it.b.original.passTypeIdentifier === openItem.b.original.passTypeIdentifier) {
-        const offset = i - items.indexOf(openItem);
-        x = Math.sign(offset) * pageWidth();
+      else if (pages.includes(it)) {
+        const offset = pages.indexOf(it) - pageIndex;
+        x = offset * pageWidth();
         y = base + 10;
         z = 899 - Math.abs(offset);
       }
-      // Real cards from the collection form the lower stack when there is room.
-      else if (contactless && viewH > openItem.wrap.offsetHeight + 240) {
-        y = base + viewH - 65 + Math.min(pile, 3) * 10;
+      // Unrelated passes stay in the lower stack, outside the swipe group.
+      else {
+        y = pileStart + Math.min(pile, 3) * 10;
         z = 100 + pile;
         pile++;
       }
-      // The other passes slide down out of view while one is open.
-      else { y = base + viewH + 24 + Math.min(pile, 3) * 8; z = 100 + pile; pile++; }
       it.y = y;
       place(it, x, y);
       it.wrap.style.zIndex = z;
     });
     syncOpenState();
     if (contactless) reader.style.transform = `translate3d(0, ${openItem.y + openItem.wrap.offsetHeight + 46}px, 0)`;
-    if (contactless) stack.style.height = openItem.y + openItem.wrap.offsetHeight + 165 + 'px';
+    if (openItem) stack.style.height = Math.max(
+      openItem.y + openItem.wrap.offsetHeight + (contactless ? 165 : 40),
+      pile ? pileStart + Math.min(pile - 1, 3) * 10 + 80 : 0,
+    ) + 'px';
     if (!openItem) stack.style.height = (n - 1) * PEEK + items[n - 1].wrap.offsetHeight + 'px';
   }
 
   function syncOpenState() {
     items.forEach((it) => {
       it.wrap.classList.toggle('is-open', it === openItem);
-      it.wrap.tabIndex = !openItem || it === openItem ? 0 : -1;
+      it.wrap.tabIndex = !openItem || it === openItem || it.wrap.classList.contains('is-parked') ? 0 : -1;
       it.wrap.setAttribute('aria-expanded', String(it === openItem));
     });
     renderDots();
@@ -1087,11 +1117,12 @@
 
   // iOS-style page dots under an open pass; long collections show a sliding window of 9.
   function renderDots() {
-    const n = items.length;
+    const pages = swipeItems();
+    const n = pages.length;
     const show = !!openItem && n > 1;
     dots.classList.toggle('show', show);
     if (!show) return;
-    const idx = items.indexOf(openItem);
+    const idx = pages.indexOf(openItem);
     const MAX = 9;
     const start = n <= MAX ? 0 : Math.min(Math.max(0, idx - 4), n - MAX);
     const end = Math.min(n, start + MAX);
@@ -1134,9 +1165,10 @@
     if (suppressClick) return;
     if (!openItem) openPass(it);
     else if (it !== openItem) {
-      const offset = items.indexOf(it) - items.indexOf(openItem);
-      if (hasContactless(openItem.b) && hasContactless(it.b) && Math.abs(offset) === 1) pageTo(offset);
-      else closePass();
+      const pages = swipeItems();
+      const offset = pages.indexOf(it) - pages.indexOf(openItem);
+      if (pages.includes(it) && hasContactless(openItem.b) && Math.abs(offset) === 1) pageTo(offset);
+      else openPass(it);
     }
     else if (hasContactless(it.b)) screen.classList.toggle('reader-controls');
   }
@@ -1199,7 +1231,8 @@
     }
     const W = pageWidth();
     const dir = drag.dx < 0 ? 1 : -1;
-    const nb = items[items.indexOf(openItem) + dir] || null;
+    const pages = swipeItems();
+    const nb = pages[pages.indexOf(openItem) + dir] || null;
     if (drag.neighbor && drag.neighbor !== nb) place(drag.neighbor, drag.dir * W, openItem.y);
     if (nb && !drag.touched.has(nb)) {
       nb.wrap.classList.add('dragging');
@@ -1242,6 +1275,7 @@
 
   // Slides the open pass out and its neighbor in; the old one rejoins the pile once it's off screen.
   function commitPage(nb, dir, touched = new Map()) {
+    if (!openItem || !swipeItems().includes(nb)) return;
     const old = openItem;
     const W = pageWidth();
     place(old, -dir * W, old.y);
@@ -1276,7 +1310,9 @@
 
   async function pageTo(dir) {
     if (!openItem || drag) return;
-    const nb = items[items.indexOf(openItem) + dir];
+    const selected = openItem;
+    const pages = swipeItems();
+    const nb = pages[pages.indexOf(openItem) + dir];
     if (!nb) {
       const it = openItem;
       place(it, -dir * 28, it.y);
@@ -1288,6 +1324,7 @@
     place(nb, dir * pageWidth(), openItem.y);
     await nextFrame();
     nb.wrap.classList.remove('no-anim');
+    if (openItem !== selected) { layout(); return; }
     commitPage(nb, dir);
   }
 
