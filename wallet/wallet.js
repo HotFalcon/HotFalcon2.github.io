@@ -1014,7 +1014,8 @@
       let z;
       if (!openItem) { y = i * PEEK; z = i + 1; }
       else if (it === openItem) { y = base + 10; z = 900; }
-      else { y = base + viewH - 78 + Math.min(pile, 3) * 8; z = 100 + pile; pile++; }
+      // The other passes slide down out of view while one is open.
+      else { y = base + viewH + 24 + Math.min(pile, 3) * 8; z = 100 + pile; pile++; }
       it.y = y;
       place(it, 0, y);
       it.wrap.style.zIndex = z;
