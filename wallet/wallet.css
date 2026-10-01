@@ -307,6 +307,59 @@ button { cursor: pointer; }
 .bc-error { font-size: 12px; color: #8e8e93; padding: 20px 10px; }
 .bc.dim { opacity: .35; }
 
+/* Contactless event presentation, measured from the Wallet reader view.
+   Container units keep the artwork and field rhythm proportional on small phones. */
+.pass-wrap:has(.contactless) { container-type: inline-size; }
+.contactless.pass {
+  min-height: 105.6cqw;
+  border-radius: 0;
+  -webkit-mask: radial-gradient(circle at 50% -6.7cqw, transparent 11.15cqw, #000 11.3cqw);
+  mask: radial-gradient(circle at 50% -6.7cqw, transparent 11.15cqw, #000 11.3cqw);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12);
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.contactless .p-head { height: 17.9cqw; min-height: 17.9cqw; padding: 0 4.2cqw 0 3.4cqw; gap: 2cqw; }
+.contactless .p-logo { max-width: 40cqw; max-height: 13cqw; }
+.contactless .p-logotext:empty { display: none; }
+.contactless .p-hfields { flex-shrink: 0; max-width: 53%; }
+.contactless .p-hfields .f-value { font-size: 5.6cqw; line-height: 1.12; margin-top: 0; }
+.contactless .f-label { font-size: 2.8cqw; line-height: 1.2; letter-spacing: .02em; }
+.contactless .f-value { font-size: 5.5cqw; line-height: 1.17; margin-top: .6cqw; text-overflow: clip; overflow-wrap: anywhere; }
+.contactless .p-strip { margin-top: 0; }
+.contactless .p-pad { padding: 0 4.2cqw; }
+.contactless .p-row { margin-top: 3.7cqw; gap: 2cqw; }
+.contactless .p-event-secondary { margin-top: 2.4cqw; }
+.contactless .p-event-secondary .f { flex: 1; }
+.contactless .p-event-secondary .f-value { font-size: 5.3cqw; }
+.contactless .p-event-seats .f { flex: 1; }
+.contactless .p-event-seats .f:nth-child(2):not(:last-child) { text-align: center; }
+.contactless .p-event-extra .f { flex: 1 1 0; }
+.contactless .p-event-extra .f:last-child { flex-grow: 1.13; text-align: left; }
+.contactless .p-event-extra .f-value { font-size: 4.15cqw; }
+.contactless .p-bottom { padding: 3cqw 2cqw 1.8cqw; }
+.p-contactless { display: flex; align-items: flex-end; justify-content: space-between; width: 100%; }
+.p-app-icon { border-radius: 5px; object-fit: contain; }
+.p-contactless-symbol { margin-left: auto; display: block; width: 6cqw; height: 7cqw; color: var(--fg); opacity: .65; }
+.p-contactless-symbol svg { display: block; width: 100%; height: 100%; }
+.screen.is-reader { background: #000; color: #fff; }
+.screen.is-reader .sheet, .screen.is-reader .asheet { color: var(--ios-label); }
+.screen.is-reader .w-content { overflow-y: auto; }
+.screen.is-reader .w-top { height: 18px; z-index: 2; }
+.screen.is-reader .w-done, .screen.is-reader #moreBtn { opacity: 0; pointer-events: none; }
+.screen.is-reader.reader-controls .w-done, .screen.is-reader.reader-controls #moreBtn,
+.screen.is-reader .w-top:focus-within .w-done, .screen.is-reader .w-top:focus-within #moreBtn { opacity: 1; pointer-events: auto; }
+.screen.is-reader .w-done { font-size: 13px; }
+.screen.is-reader #moreBtn { width: 28px; height: 24px; }
+.screen.is-reader .w-card.is-open .pass-wrap { filter: drop-shadow(0 7px 9px rgba(0, 156, 222, .23)); }
+.screen.is-reader .w-dots i { background: #dff8ff; }
+.w-reader { position: absolute; top: 0; left: 0; right: 0; z-index: 901; display: flex; flex-direction: column; align-items: center; gap: 9px; color: #009dff; pointer-events: none; }
+.w-reader > svg { width: 72px; height: 72px; overflow: visible; }
+.w-reader > span { color: #8e8e93; font-size: 20px; font-weight: 400; line-height: 26px; }
+.reader-phone { animation: reader-phone 2.8s ease-in-out infinite; }
+.reader-ring { animation: reader-ring 2.8s ease-in-out infinite; }
+@keyframes reader-phone { 0%, 15%, 85%, 100% { transform: translateY(0); } 45%, 60% { transform: translateY(-7px); } }
+@keyframes reader-ring { 0%, 20%, 85%, 100% { opacity: 1; } 50% { opacity: .65; } }
+
 /* unverified passes show this instead of a barcode */
 .keepsake { display: flex; align-items: center; gap: 11px; max-width: 100%; padding: 11px 16px 11px 13px; border-radius: 12px; background: rgba(255, 255, 255, .92); color: #1c1c1e; text-align: left; }
 .keepsake svg { flex: none; width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
@@ -462,6 +515,7 @@ button.ios-row:active { background: var(--ios-fill); }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .reader-phone, .reader-ring { animation: none; }
   .w-card, .w-title, .w-done, .w-circle, .toast, .w-stack { transition-duration: .01ms !important; }
   .sheet, .asheet, .sheet-backdrop, .as-backdrop, .w-empty { animation-duration: .01ms !important; }
 }
