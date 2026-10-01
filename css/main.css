@@ -131,3 +131,9 @@ img {
 max-width: 250px;
 }
 }
+
+.page-footer {
+clear: both;
+padding-top: 2em;
+text-align: center;
+}
