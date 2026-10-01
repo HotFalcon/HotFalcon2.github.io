@@ -59,6 +59,14 @@ Rules that apply to all styles:
 
 ## The back of the pass
 
+### Contactless event tickets
+
+Imported event tickets with original `nfc` metadata use the compact reader presentation: a wide shallow notch, proportionally sized header and fields, issuer icon, contactless symbol, and a looping SVG/CSS **Hold Near Reader** animation. The animation respects reduced-motion preferences. The viewer does not transmit NFC or authenticate tickets; contactless entry still requires the original ticket in Apple Wallet. Unverified and voided passes do not activate this presentation.
+
+Tap the open card to reveal **Done** and **Pass Details**, or swipe down to return to the collection. Neighboring contactless tickets peek in from the side; other saved cards appear at the bottom when space allows. Field values shrink to fit, then wrap when necessary. Barcode-only passes keep their existing layout. Use Add to Home Screen for the full-screen presentation; Safari's toolbar and the iPhone's system UI remain controlled by iOS.
+
+## The back of the pass
+
 Since iOS 16, tapping **•••** opens a "Pass Details" sheet instead of flipping the card. The viewer does the same thing. The sheet shows:
 
 - the organization

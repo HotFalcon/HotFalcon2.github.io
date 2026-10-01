@@ -23,6 +23,8 @@
     PKBarcodeFormatCode128: { fn: 'code128', cls: 'code128', name: 'Code 128', opts: { height: 10 } },
   };
   const styleOf = (pass) => STYLES.find((s) => pass[s] && typeof pass[s] === 'object') || 'generic';
+  // This is a visual presentation of the imported pass, never an NFC session.
+  const hasContactless = (b) => styleOf(b.pass) === 'eventTicket' && !!b.original.nfc && !passMark(b) && !b.pass.voided;
 
   const screen = $('#screen');
   const scroller = $('#content');
@@ -431,6 +433,7 @@
       const k = Math.min(1, maxW / w, maxH / h);
       node.style.width = w * k + 'px';
       node.style.height = h * k + 'px';
+      requestAnimationFrame(layout);
     };
     node.src = image.url;
     return node;
@@ -541,6 +544,7 @@
     const { bg, fg, lbl } = passColors(pass, !!bgImage);
 
     const card = el('article', 'pass ' + style);
+    card.classList.toggle('contactless', hasContactless(b));
     card.style.setProperty('--bg', rgb(bg));
     card.style.setProperty('--fg', rgb(fg));
     card.style.setProperty('--lbl', rgb(lbl));
@@ -589,15 +593,15 @@
       const aux1 = auxiliary.filter((f) => f.row === 1).slice(0, 4);
       if (images.strip) {
         card.append(stripBlock(b, images.strip, primary[0]));
-        if (secondary.length) card.append(row(b, secondary.slice(0, 4), 'p-pad'));
+        if (secondary.length) card.append(row(b, secondary.slice(0, 4), 'p-pad p-event-secondary'));
       } else {
         const top = [];
         if (primary[0]) top.push(primaryBlock(b, primary[0]));
         if (secondary.length) top.push(row(b, secondary.slice(0, 4)));
         card.append(withThumb(top, images.thumbnail));
       }
-      if (aux0.length) card.append(row(b, aux0, 'p-pad'));
-      if (aux1.length) card.append(row(b, aux1, 'p-pad'));
+      if (aux0.length) card.append(row(b, aux0, 'p-pad p-event-seats'));
+      if (aux1.length) card.append(row(b, aux1, 'p-pad p-event-extra'));
     } else {
       const top = [];
       if (primary[0]) top.push(primaryBlock(b, primary[0]));
@@ -616,6 +620,15 @@
     const mark = passMark(b);
     if (mark) bottom.append(markNode(mark));
     else if (barcode) bottom.append(barcodeNode(b, barcode, !!pass.voided));
+    if (hasContactless(b)) {
+      const contactless = el('div', 'p-contactless');
+      if (images.icon) contactless.append(sizedImg(images.icon, 'p-app-icon', 20, 20));
+      const waves = el('span', 'p-contactless-symbol');
+      waves.setAttribute('aria-label', 'Contactless pass');
+      waves.innerHTML = '<svg viewBox="0 0 24 28" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 11a7 7 0 0 1 0 6M9 8a13 13 0 0 1 0 12M13 5a19 19 0 0 1 0 18M17 2a25 25 0 0 1 0 24"/></svg>';
+      contactless.append(waves);
+      bottom.append(contactless);
+    }
     card.append(bottom);
     return card;
   }
@@ -998,29 +1011,68 @@
   const PEEK = 62;
   const dots = el('div', 'w-dots');
   dots.setAttribute('aria-hidden', 'true');
+  const reader = el('div', 'w-reader');
+  reader.hidden = true;
+  reader.setAttribute('aria-label', 'Hold Near Reader animation preview. This website does not transmit NFC.');
+  reader.innerHTML = '<svg viewBox="0 0 72 72" aria-hidden="true"><defs><clipPath id="reader-circle"><circle cx="36" cy="36" r="30"/></clipPath></defs><g clip-path="url(#reader-circle)"><g class="reader-phone"><rect x="22" y="25" width="28" height="49" rx="5" fill="#08477f" stroke="currentColor" stroke-width="1.5"/><path d="M23 43 49 63v10H23Z" fill="#002d55"/><path d="M33 28h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g></g><circle class="reader-ring" cx="36" cy="36" r="30" fill="none" stroke="currentColor" stroke-width="4"/></svg><span aria-hidden="true">Hold Near Reader</span>';
   const place = (it, x, y) => { it.wrap.style.transform = `translate3d(${x}px, ${y}px, 0)`; };
+
+  // Fit full values to the available row before allowing wrapping on narrow screens.
+  function fitContactlessFields() {
+    stack.querySelectorAll('.contactless .f-value').forEach((node) => {
+      node.style.fontSize = '';
+      node.style.whiteSpace = '';
+      const initial = parseFloat(getComputedStyle(node).fontSize);
+      let size = initial;
+      while (node.scrollWidth > node.clientWidth + 1 && size > initial * .78) {
+        size -= .25;
+        node.style.fontSize = size + 'px';
+      }
+      if (node.scrollWidth > node.clientWidth + 1) node.style.whiteSpace = 'normal';
+    });
+  }
 
   function layout() {
     const n = items.length;
     emptyState.hidden = n > 0;
     stack.hidden = n === 0;
     if (dots.parentNode !== stack) stack.append(dots);
+    if (reader.parentNode !== stack) stack.append(reader);
+    const contactless = !!openItem && hasContactless(openItem.b);
+    screen.classList.toggle('is-reader', contactless);
+    reader.hidden = !contactless;
     if (!n) return;
+    fitContactlessFields();
     const base = scroller.scrollTop - stack.offsetTop;
     const viewH = scroller.clientHeight;
     let pile = 0;
     items.forEach((it, i) => {
       let y;
       let z;
+      let x = 0;
       if (!openItem) { y = i * PEEK; z = i + 1; }
       else if (it === openItem) { y = base + 10; z = 900; }
+      else if (contactless && hasContactless(it.b) && it.b.original.passTypeIdentifier === openItem.b.original.passTypeIdentifier) {
+        const offset = i - items.indexOf(openItem);
+        x = Math.sign(offset) * pageWidth();
+        y = base + 10;
+        z = 899 - Math.abs(offset);
+      }
+      // Real cards from the collection form the lower stack when there is room.
+      else if (contactless && viewH > openItem.wrap.offsetHeight + 240) {
+        y = base + viewH - 65 + Math.min(pile, 3) * 10;
+        z = 100 + pile;
+        pile++;
+      }
       // The other passes slide down out of view while one is open.
       else { y = base + viewH + 24 + Math.min(pile, 3) * 8; z = 100 + pile; pile++; }
       it.y = y;
-      place(it, 0, y);
+      place(it, x, y);
       it.wrap.style.zIndex = z;
     });
     syncOpenState();
+    if (contactless) reader.style.transform = `translate3d(0, ${openItem.y + openItem.wrap.offsetHeight + 46}px, 0)`;
+    if (contactless) stack.style.height = openItem.y + openItem.wrap.offsetHeight + 165 + 'px';
     if (!openItem) stack.style.height = (n - 1) * PEEK + items[n - 1].wrap.offsetHeight + 'px';
   }
 
@@ -1081,19 +1133,24 @@
   function onCardTap(it) {
     if (suppressClick) return;
     if (!openItem) openPass(it);
-    else if (it !== openItem) closePass();
+    else if (it !== openItem) {
+      const offset = items.indexOf(it) - items.indexOf(openItem);
+      if (hasContactless(openItem.b) && hasContactless(it.b) && Math.abs(offset) === 1) pageTo(offset);
+      else closePass();
+    }
+    else if (hasContactless(it.b)) screen.classList.toggle('reader-controls');
   }
 
   function openPass(it) {
     if (openItem === it) return;
     openItem = it;
+    screen.classList.remove('reader-controls');
     screen.classList.add('is-open');
     scroller.classList.add('locked');
     $('#doneBtn').tabIndex = 0;
     $('#moreBtn').tabIndex = 0;
     layout();
     updatePanel();
-    it.wrap.focus({ preventScroll: true });
   }
 
   function closePass() {
@@ -1101,6 +1158,7 @@
     const was = openItem;
     openItem = null;
     screen.classList.remove('is-open');
+    screen.classList.remove('reader-controls');
     scroller.classList.remove('locked');
     $('#doneBtn').tabIndex = -1;
     $('#moreBtn').tabIndex = -1;
@@ -1113,7 +1171,7 @@
   let drag = null;
   let suppressClick = false;
   let deviceScale = 1;
-  const pageWidth = () => openItem.wrap.offsetWidth + 24;
+  const pageWidth = () => hasContactless(openItem.b) ? openItem.wrap.firstChild.offsetWidth + 8 : openItem.wrap.offsetWidth + 24;
 
   stack.addEventListener('pointerdown', (e) => {
     if (!openItem || !openItem.wrap.contains(e.target) || e.button > 0) return;
@@ -1192,6 +1250,11 @@
     touched.forEach((side, it) => { if (it !== nb) place(it, side * W, old.y); });
     nb.y = old.y;
     openItem = nb;
+    // Recompute the header, field sizes and reader position when pass styles change.
+    screen.classList.toggle('is-reader', hasContactless(nb.b));
+    reader.hidden = !hasContactless(nb.b);
+    fitContactlessFields();
+    if (!reader.hidden) reader.style.transform = `translate3d(0, ${nb.y + nb.wrap.offsetHeight + 46}px, 0)`;
     syncOpenState();
     updatePanel();
     nb.wrap.focus({ preventScroll: true });
@@ -1450,6 +1513,7 @@
     }
 
     const notes = [];
+    if (b.original.nfc) notes.push('The Hold Near Reader animation is a visual preview. To use contactless entry, open the original ticket in Apple Wallet. Tap the card to show controls, or swipe down to close it.');
     if (b.edited) notes.push(`Edited ${mediumDate(new Date(b.editedAt || Date.now()))}. Display details changed; the original barcode is unchanged.`);
     if (b.status === 'unsigned') notes.push('This file isn’t signed, so its barcode is hidden.');
     else if (b.status === 'modified') notes.push('This file was changed after it was signed, so its barcode is hidden.');
@@ -2116,6 +2180,7 @@
     resizeTimer = setTimeout(layout, 100);
   });
   fitDevice();
+  document.fonts.ready.then(() => requestAnimationFrame(layout));
 
   function tick() {
     $('#sbTime').textContent = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/i, '');
