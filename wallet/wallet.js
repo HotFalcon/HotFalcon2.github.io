@@ -1042,6 +1042,20 @@
   reader.innerHTML = '<svg viewBox="0 0 72 72" aria-hidden="true"><defs><clipPath id="reader-circle"><circle cx="36" cy="36" r="30"/></clipPath></defs><g clip-path="url(#reader-circle)"><g class="reader-phone"><rect x="22" y="25" width="28" height="49" rx="5" fill="#08477f" stroke="currentColor" stroke-width="1.5"/><path d="M23 43 49 63v10H23Z" fill="#002d55"/><path d="M33 28h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g></g><circle class="reader-ring" cx="36" cy="36" r="30" fill="none" stroke="currentColor" stroke-width="4"/></svg><span aria-hidden="true">Hold Near Reader</span>';
   const place = (it, x, y) => { it.wrap.style.transform = `translate3d(${x}px, ${y}px, 0)`; };
 
+  let readerRestartTimer = 0;
+  function restartReader() {
+    clearTimeout(readerRestartTimer);
+    reader.classList.remove('is-restarting');
+    if (reader.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    reader.classList.add('is-restarting');
+    readerRestartTimer = setTimeout(() => {
+      reader.querySelectorAll('.reader-phone, .reader-ring').forEach((node) => {
+        node.getAnimations().forEach((animation) => { animation.currentTime = 0; });
+      });
+      reader.classList.remove('is-restarting');
+    }, 300);
+  }
+
   // Fit full values to the available row before allowing wrapping on narrow screens.
   function fitContactlessFields() {
     stack.querySelectorAll('.contactless .f-value').forEach((node) => {
@@ -1182,6 +1196,7 @@
     $('#doneBtn').tabIndex = 0;
     $('#moreBtn').tabIndex = 0;
     layout();
+    restartReader();
     updatePanel();
   }
 
@@ -1195,6 +1210,7 @@
     $('#doneBtn').tabIndex = -1;
     $('#moreBtn').tabIndex = -1;
     layout();
+    restartReader();
     updatePanel();
     if (items.includes(was)) was.wrap.focus({ preventScroll: true });
   }
@@ -1287,6 +1303,7 @@
     // Recompute the header, field sizes and reader position when pass styles change.
     screen.classList.toggle('is-reader', hasContactless(nb.b));
     reader.hidden = !hasContactless(nb.b);
+    restartReader();
     fitContactlessFields();
     if (!reader.hidden) reader.style.transform = `translate3d(0, ${nb.y + nb.wrap.offsetHeight + 46}px, 0)`;
     syncOpenState();

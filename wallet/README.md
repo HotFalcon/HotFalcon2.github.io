@@ -61,6 +61,8 @@ Rules that apply to all styles:
 
 Imported event tickets with original `nfc` metadata use the compact reader presentation: a wide shallow notch, proportionally sized header and fields, issuer icon, contactless symbol, and a looping SVG/CSS **Hold Near Reader** animation. The animation respects reduced-motion preferences. The viewer does not transmit NFC or authenticate tickets; contactless entry still requires the original ticket in Apple Wallet. Unverified and voided passes do not activate this presentation.
 
+Opening a contactless ticket or completing a swipe briefly fades the reader prompt out, then restarts the phone entrance and ring together. Cancelled swipes, group-boundary swipes, and layout changes keep the current loop running. Reduced-motion mode keeps the prompt static without a fade.
+
 Tap the open card to reveal **Done** and **Pass Details**, or swipe down to return to the collection. Neighboring tickets in the same group peek in from the side; other saved cards remain stacked below the reader. Field values shrink to fit, then wrap when necessary. Barcode-only passes keep their existing card layout. Use Add to Home Screen for the full-screen presentation; Safari's toolbar and the iPhone's system UI remain controlled by iOS.
 
 ## The back of the pass
