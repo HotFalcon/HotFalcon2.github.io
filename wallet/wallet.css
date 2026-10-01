@@ -198,6 +198,11 @@ button { cursor: pointer; }
 .screen:not(.is-open) .w-card:active .pass-wrap { transform: scale(.985); }
 .w-card.is-open { cursor: default; touch-action: none; }
 .w-card.removing { opacity: 0; pointer-events: none; }
+.w-dots { position: absolute; left: 0; right: 0; top: 0; z-index: 950; display: flex; justify-content: center; align-items: center; gap: 9px; height: 8px; pointer-events: none; opacity: 0; transition: opacity .3s, transform .55s var(--spring); }
+.w-dots.show { opacity: 1; }
+.w-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--ios-label); opacity: .22; transition: opacity .25s, transform .25s; }
+.w-dots i.on { opacity: .8; }
+.w-dots i.small { transform: scale(.6); }
 .pass-wrap.refresh { animation: refresh .5s var(--spring); }
 @keyframes refresh { from { opacity: .4; transform: scale(.97); } }
 
