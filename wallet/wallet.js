@@ -1304,6 +1304,7 @@
   function mainMenu() {
     actionSheet({
       actions: [
+        ...(!matchMedia('(display-mode: standalone)').matches ? [{ label: document.body.classList.contains('phone-mode') ? 'Exit Full Screen' : 'Full Screen Phone View', run: togglePhoneMode }] : []),
         { label: 'Add Passes', run: () => fileInput.click() },
         { label: 'Add Sample Passes', run: addAllSamples },
         { label: 'Back Up Passes', run: backup },
@@ -2050,6 +2051,8 @@
   $('#editorSave').addEventListener('click', saveEditor);
   $('#backupBtn').addEventListener('click', backup);
   $('#restoreBtn').addEventListener('click', () => restoreInput.click());
+  $('#phoneModeBtn').addEventListener('click', togglePhoneMode);
+  $('#phoneModeExit').addEventListener('click', exitPhoneMode);
   backdrop.addEventListener('click', () => { if (!editor.hidden) closeEditor(); else dismiss(sheet, backdrop); });
   asBackdrop.addEventListener('click', () => dismiss(asheet, asBackdrop));
   langSelect.addEventListener('change', () => { if (openItem) setLang(openItem, langSelect.value); });
@@ -2065,11 +2068,43 @@
     if (!asheet.hidden) dismiss(asheet, asBackdrop);
     else if (!editor.hidden) closeEditor();
     else if (!sheet.hidden) dismiss(sheet, backdrop);
+    else if (document.body.classList.contains('phone-mode')) exitPhoneMode();
     else closePass();
   });
 
+  function syncPhoneMode() {
+    const active = document.body.classList.contains('phone-mode');
+    $('#phoneModeBtn').setAttribute('aria-pressed', String(active));
+    $('#phoneModeExit').hidden = !active;
+    fitDevice();
+    requestAnimationFrame(layout);
+  }
+
+  function exitPhoneMode() {
+    document.body.classList.remove('phone-mode');
+    syncPhoneMode();
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  }
+
+  async function togglePhoneMode() {
+    if (document.body.classList.contains('phone-mode')) { exitPhoneMode(); return; }
+    if (!document.documentElement.requestFullscreen && matchMedia('(max-width: 600px)').matches) {
+      toast('Add this page to your home screen for full screen');
+      return;
+    }
+    document.body.classList.add('phone-mode');
+    syncPhoneMode();
+    if (document.documentElement.requestFullscreen) {
+      try { await document.documentElement.requestFullscreen(); } catch { /* The phone view still works inside this tab. */ }
+    }
+  }
+
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement && document.body.classList.contains('phone-mode')) exitPhoneMode();
+  });
+
   function fitDevice() {
-    const phone = matchMedia('(max-width: 600px), (display-mode: standalone)').matches;
+    const phone = document.body.classList.contains('phone-mode') || matchMedia('(max-width: 600px), (display-mode: standalone)').matches;
     const scale = phone ? 1 : Math.max(0.6, Math.min(1, (innerHeight - 32) / 868));
     deviceScale = +scale.toFixed(3);
     document.documentElement.style.setProperty('--device-scale', String(deviceScale));

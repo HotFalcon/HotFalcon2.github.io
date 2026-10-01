@@ -120,6 +120,21 @@ button { cursor: pointer; }
 .tip { margin: 0; font-size: 13px; color: var(--muted); }
 .tip strong { color: var(--page-fg); }
 
+.phone-mode-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; min-height: 46px; padding: 10px 16px;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: var(--card); color: var(--page-fg); font-weight: 600;
+}
+.phone-mode-btn:hover { border-color: var(--accent); color: var(--accent); }
+.phone-mode-btn:focus-visible, .phone-mode-exit:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.phone-mode-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.phone-mode-exit {
+  position: fixed; top: 16px; right: 16px; z-index: 100;
+  padding: 9px 14px; border: 1px solid #777; border-radius: 999px;
+  background: rgba(40, 40, 43, .9); color: #fff; font-size: 13px; font-weight: 600;
+}
+
 .stage { display: flex; justify-content: center; position: sticky; top: 16px; }
 
 .foot { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
@@ -432,6 +447,18 @@ button.ios-row:active { background: var(--ios-fill); }
   .statusbar, .home-bar { display: none; }
   .w-top { height: 60px; }
   .sheet { top: calc(var(--safe-top) + 12px); }
+  body.phone-mode .phone-mode-exit { top: auto; right: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); }
+}
+
+/* The desktop full-screen option keeps the Wallet display at phone width. */
+@media (min-width: 601px) {
+  body.phone-mode { overflow: hidden; background: #111114; }
+  body.phone-mode .page { max-width: none; padding: 0; }
+  body.phone-mode .controls, body.phone-mode .foot { display: none; }
+  body.phone-mode .layout { display: block; }
+  body.phone-mode .stage { position: fixed; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; background: #111114; }
+  body.phone-mode .device { zoom: 1; width: auto; height: auto; padding: 0; border-radius: 0; background: none; box-shadow: none; }
+  body.phone-mode .screen { width: min(390px, 100vw); height: min(844px, 100dvh); border-radius: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

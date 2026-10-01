@@ -85,6 +85,7 @@ Since iOS 16, tapping **•••** opens a "Pass Details" sheet instead of flip
   - The neighbor card is pulled from the hidden set below the screen only while you drag. Once a card has slid off to the side, it jumps back below the screen without animating, so nothing flies across the screen.
 - **Animations:** new cards slide up from below (staggered), removed cards drop and fade, sheets slide up with a dimmed backdrop, and saved edits flash in. All use one spring curve, `cubic-bezier(.2, .9, .22, 1)`. Reduced motion is respected.
 - **Phones:** at 600 px wide or less, or when launched from the home screen (`display-mode: standalone`), the side panel and iPhone frame are hidden and the page *is* the Wallet screen, full height with safe-area padding. `manifest.webmanifest` plus the `apple-mobile-web-app-*` tags make "Add to Home Screen" open it full screen.
+- **Full Screen Phone View:** the desktop button or Wallet menu opens a borderless, phone-width display and requests browser full screen when supported. Escape, the exit button, or the Wallet menu restores the normal page. On mobile browsers without the Fullscreen API, the menu suggests adding the page to the home screen.
 - **Safari detail:** the file picker only opens from a direct tap, so action-sheet buttons run their action inside the tap before the sheet animates away.
 
 ## Saving and backups

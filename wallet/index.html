@@ -33,6 +33,11 @@
           <p class="lede">Keep your Apple Wallet <code>.pkpass</code> tickets in one place and see them the way they look on an iPhone. Your passes stay in this browser and are never uploaded.</p>
         </header>
 
+        <button type="button" class="phone-mode-btn" id="phoneModeBtn" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/></svg>
+          Full Screen Phone View
+        </button>
+
         <label class="drop" for="file" tabindex="0" role="button">
           <svg class="drop-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18M3 13h18"/></svg>
           <strong>Add .pkpass files</strong>
@@ -134,6 +139,8 @@
         </div>
       </section>
     </main>
+
+    <button type="button" class="phone-mode-exit" id="phoneModeExit" hidden>Exit Full Screen</button>
 
     <footer class="foot">
       <p>Works with boarding passes, event tickets, store cards, coupons and generic passes, plus QR, PDF417, Aztec and Code 128 barcodes. Tap a pass to open it, swipe left or right (or use the arrow keys) to flip through your passes, swipe down to close it, and tap <b>•••</b> to see the back, edit it or duplicate it.</p>
