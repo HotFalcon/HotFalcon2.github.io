@@ -208,7 +208,7 @@ button { cursor: pointer; }
   transition: transform .55s var(--spring), opacity .35s ease;
 }
 .w-card.no-anim, .w-stack.no-anim .w-card { transition: none !important; }
-.w-card.is-paging { transition: transform var(--swipe-duration, 380ms) cubic-bezier(.22, 1, .36, 1), opacity .35s ease; }
+.w-card.is-paging { transition: transform var(--swipe-duration, 660ms) cubic-bezier(.25, .7, .25, 1), opacity .35s ease; }
 .w-card.dragging { transition: none; }
 .w-card .pass-wrap { transition: transform .2s ease; }
 .screen:not(.is-open) .w-card:active .pass-wrap { transform: scale(.985); }
@@ -345,7 +345,9 @@ button { cursor: pointer; }
 .p-contactless-symbol svg { display: block; width: 100%; height: 100%; }
 .screen.is-reader { background: #000; color: #fff; }
 .screen.is-reader .sheet, .screen.is-reader .asheet { color: var(--ios-label); }
-.screen.is-reader .w-content { overflow-y: auto; }
+.screen.is-reader .w-content { overflow: hidden; overscroll-behavior: none; touch-action: pinch-zoom; }
+.screen.is-reader.reader-overflow .w-content { overflow-y: auto; touch-action: pan-y pinch-zoom; }
+.screen.is-reader .w-card:not(.is-parked) .pass-wrap { width: var(--reader-card-width, 358px); max-width: 100%; }
 .screen.is-reader .w-top { height: 18px; z-index: 2; }
 .screen.is-reader .w-done, .screen.is-reader #moreBtn { opacity: 0; pointer-events: none; }
 .screen.is-reader.reader-controls .w-done, .screen.is-reader.reader-controls #moreBtn,

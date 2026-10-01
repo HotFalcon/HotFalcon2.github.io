@@ -47,6 +47,7 @@
 
   let items = [];       // { entry, parsed, b, wrap, y }
   let openItem = null;
+  let collectionScrollTop = 0;
 
   class PassError extends Error {}
 
@@ -1043,7 +1044,7 @@
   const place = (it, x, y) => { it.wrap.style.transform = `translate3d(${x}px, ${y}px, 0)`; };
 
   let readerRestartTimer = 0;
-  function restartReader() {
+  function restartReader(delay = 300) {
     clearTimeout(readerRestartTimer);
     reader.classList.remove('is-restarting');
     if (reader.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -1053,7 +1054,7 @@
         node.getAnimations().forEach((animation) => { animation.currentTime = 0; });
       });
       reader.classList.remove('is-restarting');
-    }, 300);
+    }, delay);
   }
 
   // Fit full values to the available row before allowing wrapping on narrow screens.
@@ -1084,9 +1085,17 @@
     const pages = swipeItems();
     const pageIndex = pages.indexOf(openItem);
     items.forEach((it) => it.wrap.classList.toggle('is-parked', !!openItem && !pages.includes(it)));
+    const viewH = scroller.clientHeight;
+    // Fit portrait reader content instead of making it a vertically scrolling page.
+    // Very short/landscape views retain a scroll fallback for access to every card.
+    screen.classList.toggle('reader-overflow', contactless && viewH < 450);
+    if (contactless) {
+      const reserve = pages.length < n ? 285 : 185;
+      const width = Math.min(358, stack.clientWidth, Math.max(220, (viewH - reserve) / 1.056));
+      screen.style.setProperty('--reader-card-width', width + 'px');
+    }
     fitContactlessFields();
     const base = scroller.scrollTop - stack.offsetTop;
-    const viewH = scroller.clientHeight;
     const pileStart = openItem ? Math.max(base + viewH - 82, base + 10 + openItem.wrap.offsetHeight + (contactless ? 185 : 50)) : 0;
     let pile = 0;
     items.forEach((it, i) => {
@@ -1189,7 +1198,9 @@
 
   function openPass(it) {
     if (openItem === it) return;
+    if (!openItem) collectionScrollTop = scroller.scrollTop;
     openItem = it;
+    if (hasContactless(it.b)) scroller.scrollTop = 0;
     screen.classList.remove('reader-controls');
     screen.classList.add('is-open');
     scroller.classList.add('locked');
@@ -1213,6 +1224,7 @@
     restartReader();
     updatePanel();
     if (items.includes(was)) was.wrap.focus({ preventScroll: true });
+    scroller.scrollTop = collectionScrollTop;
   }
 
   // Gestures on an open pass: swipe down to close it, swipe left/right for the next or previous pass.
@@ -1236,7 +1248,7 @@
   stack.addEventListener('pointerdown', (e) => {
     if (!openItem || !openItem.wrap.contains(e.target) || e.button > 0) return;
     const pages = swipeItems();
-    drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0, axis: null, vx: 0, lastX: e.clientX, lastT: performance.now(), neighbor: null, dir: 0, pages, index: pages.indexOf(openItem), width: pageWidth(), offset: 0 };
+    drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0, axis: null, vx: 0, lastX: e.clientX, lastT: performance.now(), neighbor: null, dir: 0, pages, index: pages.indexOf(openItem), width: pageWidth(), offset: 0, readerMode: hasContactless(openItem.b) };
   });
 
   window.addEventListener('pointermove', (e) => {
@@ -1248,19 +1260,22 @@
     drag.dx = (e.clientX - drag.x0) / deviceScale;
     drag.dy = (e.clientY - drag.y0) / deviceScale;
     if (!drag.axis) {
-      if (Math.abs(drag.dx) > 8 && Math.abs(drag.dx) > Math.abs(drag.dy)) {
+      const ax = Math.abs(drag.dx);
+      const ay = Math.abs(drag.dy);
+      if (ax > (drag.readerMode ? 12 : 8) && ax > ay * (drag.readerMode ? 1.2 : 1)) {
         drag.axis = 'x';
         // Pick up an interrupted slide from its visible position, without a jump.
         drag.offset = new DOMMatrixReadOnly(getComputedStyle(openItem.wrap).transform).m41;
         drag.pages.forEach((it) => it.wrap.classList.add('dragging'));
       }
-      else if (drag.dy > 8) drag.axis = 'y';
+      else if (drag.dy > (drag.readerMode ? 36 : 8) && (!drag.readerMode || drag.dy > ax * 1.6)) drag.axis = 'y';
       else return;
       openItem.wrap.classList.add('dragging');
     }
     if (drag.axis === 'y') {
-      const dy = Math.max(0, drag.dy);
-      openItem.wrap.style.transform = `translate3d(0, ${openItem.y + dy * 0.9}px, 0) scale(${1 - Math.min(dy, 300) / 3000})`;
+      const dy = Math.max(0, drag.dy - (drag.readerMode ? 36 : 0));
+      const movement = drag.readerMode ? dy * .32 / (1 + dy / 600) : dy * .9;
+      openItem.wrap.style.transform = `translate3d(0, ${openItem.y + movement}px, 0) scale(${1 - Math.min(movement, 300) / 3000})`;
       return;
     }
     const W = drag.width;
@@ -1279,13 +1294,15 @@
     const d = drag;
     drag = null;
     d.pages.forEach((it) => it.wrap.classList.remove('dragging'));
+    if (Math.max(Math.abs(d.dx), Math.abs(d.dy)) > 8) {
+      suppressClick = true;
+      setTimeout(() => { suppressClick = false; }, 50);
+    }
     if (!d.axis || !openItem) return;
-    suppressClick = true;
-    setTimeout(() => { suppressClick = false; }, 50);
     openItem.wrap.classList.remove('dragging');
     const cancelled = e.type === 'pointercancel';
     if (d.axis === 'y') {
-      if (!cancelled && d.dy > 110) closePass();
+      if (!cancelled && d.dy > (d.readerMode ? 220 : 110)) closePass();
       else layout();
       return;
     }
@@ -1297,7 +1314,7 @@
       Math.abs(distance) > d.width * .35 || (Math.sign(projected) === -d.dir && Math.abs(projected) > d.width * .5)
     );
     const remaining = advance ? Math.max(0, d.width - Math.abs(distance)) : Math.min(d.width, Math.abs(distance));
-    const duration = Math.round(Math.max(220, Math.min(380, 220 + remaining * .4 - Math.abs(velocity) * 35)));
+    const duration = Math.round(Math.max(560, Math.min(720, 560 + remaining * .45 - Math.abs(velocity) * 20)));
     if (advance) {
       commitPage(d.neighbor, duration);
     } else {
@@ -1310,7 +1327,7 @@
   window.addEventListener('pointercancel', endDrag);
 
   // Move the entire group to its new page with a shared settling curve.
-  function commitPage(nb, duration = 380) {
+  function commitPage(nb, duration = 660) {
     if (!openItem || !swipeItems().includes(nb)) return;
     const old = openItem;
     const W = pageWidth();
@@ -1323,7 +1340,7 @@
     // Recompute the header, field sizes and reader position when pass styles change.
     screen.classList.toggle('is-reader', hasContactless(nb.b));
     reader.hidden = !hasContactless(nb.b);
-    restartReader();
+    restartReader(Math.max(300, duration - 120));
     fitContactlessFields();
     if (!reader.hidden) reader.style.transform = `translate3d(0, ${nb.y + nb.wrap.offsetHeight + 46}px, 0)`;
     syncOpenState();
@@ -1334,7 +1351,7 @@
   }
 
   // Reconcile the stack after settling, without overlapping cleanup timers.
-  function parkLater(cards, duration = 380) {
+  function parkLater(cards, duration = 660) {
     const list = [...cards];
     clearTimeout(pagingTimer);
     pagingTimer = setTimeout(async () => {
