@@ -47,3 +47,12 @@ Question: can hotfalcon.net host a page that checks whether a visitor is a bot, 
 3. **VPS (e.g. a $5/mo DigitalOcean/Hetzner box running Node or Python behind nginx):** full control, including custom TLS fingerprinting. Most work.
 
 hotfalcon.net could stay on GitHub Pages and call an API on a subdomain (e.g. `api.hotfalcon.net` on Cloudflare Workers).
+
+## Hosting locally for testing
+- Run a local server (Node/Express or Python/Flask) on your PC, e.g. `http://localhost:3000`. It gives you full server abilities for free: raw IP, headers, and storage.
+- Ways to reach it:
+  - **Same PC:** `localhost`. The IP always shows as `127.0.0.1`, so IP and proxy checks are meaningless here.
+  - **Other devices on your Wi-Fi (phone, laptop):** `http://<your PC's LAN IP>:3000`. Find the LAN IP with `ipconfig` on Windows (e.g. `192.168.1.x`). You may need to allow the port through Windows Firewall.
+  - **From the internet (to see real public IPs, VPNs, proxies):** use a tunnel, e.g. Cloudflare Tunnel (`cloudflared`) or ngrok. These give you a public HTTPS URL without opening ports on your router. Router port forwarding also works but exposes your home IP.
+- Caveat: tunnels terminate TLS on their own servers, so TLS/JA3/JA4 fingerprints describe the tunnel, not the visitor. To test TLS fingerprinting locally, serve HTTPS yourself (e.g. with `mkcert` certs) and connect directly over LAN or port forwarding.
+- Quick start for static pages only: `python -m http.server 8000` in the repo folder. This is the same as GitHub Pages: no server-side checks.
