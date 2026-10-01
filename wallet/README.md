@@ -1,14 +1,15 @@
 # Wallet Pass Viewer: notes and findings
 
-Live page: `/wallet/` (linked from the homepage). It opens an Apple Wallet `.pkpass` (or a `.pkpasses` bundle) in the browser and draws it the way an iPhone shows it. Nothing is uploaded; the file is read with JavaScript in the browser.
+Live page: `/wallet/` (linked from the homepage). It keeps a collection of Apple Wallet `.pkpass` files (for example, tickets from games you've been to) and draws them the way an iPhone shows them. Nothing is uploaded: files are read with JavaScript and saved in the browser.
 
 ## Files
 
 | File | What it does |
 | --- | --- |
-| `index.html` | Page markup: file picker, sample buttons, pass info, and the iPhone frame. |
-| `wallet.css` | Page styles, the iPhone frame, the pass card, and the "Pass Details" sheet. |
-| `wallet.js` | Zip reading, `pass.json` and `pass.strings` parsing, field formatting, layout for each pass style, barcodes, and the built-in samples. |
+| `index.html` | Page markup: side panel (desktop), the iPhone frame, and the Wallet app screen with its sheets. |
+| `wallet.css` | Page styles, the iPhone frame, the card stack and its animations, the pass card, sheets, editor, and phone full-screen mode. |
+| `wallet.js` | Zip reading, manifest check, `pass.json` and `pass.strings` parsing, field formatting, layout for each pass style, barcodes, the saved collection (IndexedDB), the stack and gestures, the editor, backup/restore, and the samples. |
+| `manifest.webmanifest`, `icons/` | Lets "Add to Home Screen" open the page full screen like an app. |
 | `vendor/bwip-wallet.min.js` | A trimmed [bwip-js](https://github.com/metafloor/bwip-js) (MIT) build with only the 4 barcode types Wallet uses. |
 
 ## How a .pkpass is built
@@ -17,7 +18,7 @@ Live page: `/wallet/` (linked from the homepage). It opens an Apple Wallet `.pkp
 - A `.pkpasses` file is a zip that holds several `.pkpass` files.
 - The viewer unzips with the browser's built-in `DecompressionStream('deflate-raw')`, so it needs no zip library. This works in Chrome/Edge 103+, Safari 16.4+ and Firefox 113+.
 - Some passes are zipped with a folder inside (`MyPass.pass/pass.json`). The viewer finds `pass.json` wherever it is and treats that folder as the root.
-- The viewer does not check the signature. The Pass info panel only says whether a `signature` file exists (an iPhone would reject a pass without one).
+- `manifest.json` lists a SHA-1 (or SHA-256) hash for every file, and `signature` signs that manifest. The viewer re-hashes every file and compares. Genuine passes always match. A pass that doesn't match, or has no `signature`, is shown as an **Unverified pass**, with its barcode hidden. The viewer does not check the signature's certificate chain itself.
 
 ## The 5 pass styles and their layouts
 
@@ -53,14 +54,45 @@ Rules that apply to all styles:
 - Formats: `PKBarcodeFormatQR`, `PKBarcodeFormatPDF417`, `PKBarcodeFormatAztec`, `PKBarcodeFormatCode128`.
 - `messageEncoding` `iso-8859-1` is sent as raw bytes (bwip-js `binarytext: true`). Anything else, or text that can't fit in Latin-1, is sent as UTF-8.
 - `altText` is printed under the barcode inside the white box.
-- Voided or expired passes show a note above the card and fade the barcode.
+- Voided passes fade the barcode. Voided and expired notes appear in Pass Details.
+- **Edited** passes and **unverified** files never show a barcode. A small "Edited keepsake" or "Unverified pass" panel takes its place on the card face (see Editing below).
 
 ## The back of the pass
 
-Since iOS 16, tapping **•••** opens a "Pass Details" sheet instead of flipping the card. The viewer does the same thing: it shows the organization, toggles (Automatic Updates and Allow Notifications when the pass has `webServiceURL`, Suggest on Lock Screen when it has a relevant date or locations), the `backFields`, and Remove Pass.
+Since iOS 16, tapping **•••** opens a "Pass Details" sheet instead of flipping the card. The viewer does the same thing. The sheet shows:
+
+- the organization
+- toggles: Automatic Updates and Allow Notifications when the pass has `webServiceURL`, and Suggest on Lock Screen when it has a relevant date or locations
+- Edit Pass and Duplicate Pass
+- a Language picker when the pass has translations
+- the `backFields`
+- Reset to Original (edited passes only) and Remove Pass, each confirmed with an action sheet
 
 - Back field text gets links for URLs, emails and phone numbers. Phone numbers need a `+` country code or US `(555) 555-5555` / `555-555-5555` format, so order numbers like `58213-4471` don't become links.
 - `attributedValue` may contain `<a href>` tags. Only `http`, `https`, `mailto` and `tel` links are kept. Every other tag becomes plain text, so a pass file can't run scripts on the page.
+
+## The collection (Wallet app screen)
+
+- **Several files at once:** pick or drop any number of `.pkpass` / `.pkpasses` files. Bundles are split into separate passes. A pass whose `passTypeIdentifier` + `serialNumber` is already saved is skipped, which is how Wallet treats repeats.
+- **Order:** newest event first. The date comes from `relevantDate`, then `relevantDates[0]`, then the first date-formatted field, then `expirationDate`, then the date it was added.
+- **Stack:** cards overlap so each shows its top 62 px (logo, name and header fields), and the last card is fully visible, like Wallet. The cards are positioned with `transform` and ordered by `z-index`, never by moving DOM nodes, because moving a node cancels its CSS transition.
+- **Opening a pass:** the tapped card springs to the top and the rest slide into a pile at the bottom. The title turns into **Done** and **•••**. Tap the pile or Done, or swipe the card down (more than 110 px), to put it back.
+- **Animations:** new cards slide up from below (staggered), removed cards drop and fade, sheets slide up with a dimmed backdrop, and saved edits flash in. All use one spring curve, `cubic-bezier(.2, .9, .22, 1)`. Reduced motion is respected.
+- **Phones:** at 600 px wide or less, or when launched from the home screen (`display-mode: standalone`), the side panel and iPhone frame are hidden and the page *is* the Wallet screen, full height with safe-area padding. `manifest.webmanifest` plus the `apple-mobile-web-app-*` tags make "Add to Home Screen" open it full screen.
+- **Safari detail:** the file picker only opens from a direct tap, so action-sheet buttons run their action inside the tap before the sheet animates away.
+
+## Saving and backups
+
+- Passes are stored in **IndexedDB** (database `hotfalcon-wallet`, store `passes`). Each record holds the original `.pkpass` bytes (or a sample number), the chosen language, and any edit. The page asks for persistent storage with `navigator.storage.persist()`.
+- Browsers can still clear site data. Safari removes it from sites you haven't opened in 7 days, unless the site was added to the home screen. **Back up** downloads one `.json` file holding every pass (base64) and edit. **Restore** (or dropping that `.json` on the page) brings it back on any browser.
+
+## Editing (keepsakes)
+
+Use this when you don't have the exact pass from a game: duplicate a similar pass, then edit it.
+
+- The editor changes the name, organization, the three colors, images (logo, banner/strip, background, thumbnail, footer, depending on style), the transit type on boarding passes, and every field group: add, remove, or change the label and value. Date fields use a date-time picker, and number and currency fields use a number box.
+- Edits are stored separately from the original file, so **Reset to Original** always works. Uploaded images are shrunk (for example, to 1125 × 432 for a strip) before saving.
+- **An edited pass never shows a barcode.** Its card shows an "Edited keepsake · Barcode removed" panel instead. This is on purpose, so the editor can't be used to make a fake working ticket. Original, unedited passes keep their real barcode.
 
 ## Guesses (not confirmed from Apple docs)
 
@@ -95,7 +127,10 @@ These checks ran in headless Chromium:
 - A pass with a blurred background, a thumbnail, UTF-16 `en.lproj` strings, UTF-8 `fr.lproj` strings with a localized logo, and a UTF-8 Aztec code.
 - A train boarding pass zipped inside a folder, using the old `barcode` key and marked `voided`.
 - A store card with hex colors, trailing commas in `pass.json` and Code 128.
-- A `.pkpasses` bundle, including paging through it and removing a pass.
+- A `.pkpasses` bundle, whose passes were skipped because they were already saved.
+- A pass changed after signing (shown as Unverified, no barcode), and an unsigned pass.
 - A file that isn't a pass, which shows a friendly error.
 - Script injection attempts in `attributedValue` (none ran).
-- Light and dark mode, plus a 390 px-wide phone screen, where the frame is dropped and the page itself acts like the Wallet app.
+- Opening and closing passes, the swipe-down gesture with real touch events, Edit → Save (barcode replaced by the keepsake mark), Duplicate, Remove with confirmation, Reset, and reload (the collection persists).
+- Backup in one browser profile and restore in a fresh one.
+- Light and dark mode, desktop with the iPhone frame, and a 390 × 844 phone screen in full-screen mode.
