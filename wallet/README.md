@@ -76,13 +76,13 @@ Since iOS 16, tapping **•••** opens a "Pass Details" sheet instead of flip
 - **Several files at once:** pick or drop any number of `.pkpass` / `.pkpasses` files. Bundles are split into separate passes. A pass whose `passTypeIdentifier` + `serialNumber` is already saved is skipped, which is how Wallet treats repeats.
 - **Order:** newest event first. The date comes from `relevantDate`, then `relevantDates[0]`, then the first date-formatted field, then `expirationDate`, then the date it was added.
 - **Stack:** cards overlap so each shows its top 62 px (logo, name and header fields), and the last card is fully visible, like Wallet. The cards are positioned with `transform` and ordered by `z-index`, never by moving DOM nodes, because moving a node cancels its CSS transition.
-- **Opening a pass:** the tapped card springs to the top and the rest slide into a pile at the bottom. The title turns into **Done** and **•••**. Tap the pile or Done, or swipe the card down (more than 110 px), to put it back.
+- **Opening a pass:** the tapped card springs to the top, and the rest slide down out of view so only the open pass and its page dots show. The title turns into **Done** and **•••**. Tap Done, or swipe the card down (more than 110 px), to put it back.
 - **Flipping between passes:** with a pass open, swipe left for the next pass in the collection or right for the previous one. On desktop, drag with the mouse or use the ← → keys.
   - Page dots under the card show your place. Long collections show a sliding window of 9 dots, with smaller dots at the ends.
   - A swipe commits once it passes 25% of the card width, or on a quick flick. Otherwise the card springs back.
   - At the first or last pass, the card rubber-bands instead of moving.
   - The first move decides the direction: mostly sideways means flip, mostly down means close.
-  - The neighbor card is pulled from the pile only while you drag. Once a card has slid off screen, it jumps back to the pile without animating, so nothing flies across the screen.
+  - The neighbor card is pulled from the hidden set below the screen only while you drag. Once a card has slid off to the side, it jumps back below the screen without animating, so nothing flies across the screen.
 - **Animations:** new cards slide up from below (staggered), removed cards drop and fade, sheets slide up with a dimmed backdrop, and saved edits flash in. All use one spring curve, `cubic-bezier(.2, .9, .22, 1)`. Reduced motion is respected.
 - **Phones:** at 600 px wide or less, or when launched from the home screen (`display-mode: standalone`), the side panel and iPhone frame are hidden and the page *is* the Wallet screen, full height with safe-area padding. `manifest.webmanifest` plus the `apple-mobile-web-app-*` tags make "Add to Home Screen" open it full screen.
 - **Safari detail:** the file picker only opens from a direct tap, so action-sheet buttons run their action inside the tap before the sheet animates away.
