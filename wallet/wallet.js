@@ -1096,7 +1096,7 @@
     }
     fitContactlessFields();
     const base = scroller.scrollTop - stack.offsetTop;
-    const pileStart = openItem ? Math.max(base + viewH - 82, base + 10 + openItem.wrap.offsetHeight + (contactless ? 185 : 50)) : 0;
+    const pileStart = openItem ? Math.max(base + viewH - (contactless ? 98 : 82), base + 10 + openItem.wrap.offsetHeight + (contactless ? 185 : 50)) : 0;
     let pile = 0;
     items.forEach((it, i) => {
       let y;

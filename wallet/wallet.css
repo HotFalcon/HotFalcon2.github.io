@@ -205,7 +205,7 @@ button { cursor: pointer; }
   cursor: pointer;
   outline: none;
   will-change: transform;
-  transition: transform .55s var(--spring), opacity .35s ease;
+  transition: transform .7s cubic-bezier(.25, .7, .25, 1), opacity .35s ease;
 }
 .w-card.no-anim, .w-stack.no-anim .w-card { transition: none !important; }
 .w-card.is-paging { transition: transform var(--swipe-duration, 660ms) cubic-bezier(.25, .7, .25, 1), opacity .35s ease; }
@@ -348,13 +348,13 @@ button { cursor: pointer; }
 .screen.is-reader .w-content { overflow: hidden; overscroll-behavior: none; touch-action: pinch-zoom; }
 .screen.is-reader.reader-overflow .w-content { overflow-y: auto; touch-action: pan-y pinch-zoom; }
 .screen.is-reader .w-card:not(.is-parked) .pass-wrap { width: var(--reader-card-width, 358px); max-width: 100%; }
-.screen.is-reader .w-top { height: 18px; z-index: 2; }
+.screen.is-reader .w-top { height: 6px; z-index: 2; }
 .screen.is-reader .w-done, .screen.is-reader #moreBtn { opacity: 0; pointer-events: none; }
 .screen.is-reader.reader-controls .w-done, .screen.is-reader.reader-controls #moreBtn,
 .screen.is-reader .w-top:focus-within .w-done, .screen.is-reader .w-top:focus-within #moreBtn { opacity: 1; pointer-events: auto; }
 .screen.is-reader .w-done { font-size: 13px; }
 .screen.is-reader #moreBtn { width: 28px; height: 24px; }
-.screen.is-reader .w-card:not(.is-parked) .pass-wrap { filter: drop-shadow(0 7px 9px rgba(0, 156, 222, .23)); }
+.screen.is-reader .w-card:not(.is-parked) .pass-wrap { filter: drop-shadow(0 9px 12px rgba(0, 156, 222, .32)); }
 .screen.is-reader .w-dots i { background: #dff8ff; }
 .w-reader { position: absolute; top: 0; left: 0; right: 0; z-index: 901; display: flex; flex-direction: column; align-items: center; gap: 9px; color: #009dff; pointer-events: none; opacity: 1; transition: opacity .16s ease; }
 .w-reader.is-restarting { opacity: 0; }
