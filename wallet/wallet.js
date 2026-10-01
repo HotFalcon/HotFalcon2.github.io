@@ -1042,6 +1042,20 @@
   reader.innerHTML = '<svg viewBox="0 0 72 72" aria-hidden="true"><defs><clipPath id="reader-circle"><circle cx="36" cy="36" r="30"/></clipPath></defs><g clip-path="url(#reader-circle)"><g class="reader-phone"><rect x="22" y="25" width="28" height="49" rx="5" fill="#08477f" stroke="currentColor" stroke-width="1.5"/><path d="M23 43 49 63v10H23Z" fill="#002d55"/><path d="M33 28h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g></g><circle class="reader-ring" cx="36" cy="36" r="30" fill="none" stroke="currentColor" stroke-width="4"/></svg><span aria-hidden="true">Hold Near Reader</span>';
   const place = (it, x, y) => { it.wrap.style.transform = `translate3d(${x}px, ${y}px, 0)`; };
 
+  let readerRestartTimer = 0;
+  function restartReader() {
+    clearTimeout(readerRestartTimer);
+    reader.classList.remove('is-restarting');
+    if (reader.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    reader.classList.add('is-restarting');
+    readerRestartTimer = setTimeout(() => {
+      reader.querySelectorAll('.reader-phone, .reader-ring').forEach((node) => {
+        node.getAnimations().forEach((animation) => { animation.currentTime = 0; });
+      });
+      reader.classList.remove('is-restarting');
+    }, 300);
+  }
+
   // Fit full values to the available row before allowing wrapping on narrow screens.
   function fitContactlessFields() {
     stack.querySelectorAll('.contactless .f-value').forEach((node) => {
@@ -1182,6 +1196,7 @@
     $('#doneBtn').tabIndex = 0;
     $('#moreBtn').tabIndex = 0;
     layout();
+    restartReader();
     updatePanel();
   }
 
@@ -1195,6 +1210,7 @@
     $('#doneBtn').tabIndex = -1;
     $('#moreBtn').tabIndex = -1;
     layout();
+    restartReader();
     updatePanel();
     if (items.includes(was)) was.wrap.focus({ preventScroll: true });
   }
@@ -1203,23 +1219,41 @@
   let drag = null;
   let suppressClick = false;
   let deviceScale = 1;
+  let pagingTimer = 0;
   const pageWidth = () => hasContactless(openItem.b) ? openItem.wrap.firstChild.offsetWidth + 8 : openItem.wrap.offsetWidth + 24;
+
+  function pagingTransition(pages, duration) {
+    pages.forEach((it) => {
+      it.wrap.style.setProperty('--swipe-duration', duration + 'ms');
+      it.wrap.classList.add('is-paging');
+    });
+  }
+
+  function movePages(pages, index, x, width, y) {
+    pages.forEach((it, i) => place(it, (i - index) * width + x, y));
+  }
 
   stack.addEventListener('pointerdown', (e) => {
     if (!openItem || !openItem.wrap.contains(e.target) || e.button > 0) return;
-    drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0, axis: null, vx: 0, lastX: e.clientX, lastT: performance.now(), neighbor: null, dir: 0, touched: new Map() };
+    const pages = swipeItems();
+    drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0, axis: null, vx: 0, lastX: e.clientX, lastT: performance.now(), neighbor: null, dir: 0, pages, index: pages.indexOf(openItem), width: pageWidth(), offset: 0 };
   });
 
   window.addEventListener('pointermove', (e) => {
     if (!drag || e.pointerId !== drag.id || !openItem) return;
     const now = performance.now();
-    drag.vx = (e.clientX - drag.lastX) / Math.max(1, now - drag.lastT);
+    drag.vx = (e.clientX - drag.lastX) / deviceScale / Math.max(1, now - drag.lastT);
     drag.lastX = e.clientX;
     drag.lastT = now;
     drag.dx = (e.clientX - drag.x0) / deviceScale;
     drag.dy = (e.clientY - drag.y0) / deviceScale;
     if (!drag.axis) {
-      if (Math.abs(drag.dx) > 8 && Math.abs(drag.dx) > Math.abs(drag.dy)) drag.axis = 'x';
+      if (Math.abs(drag.dx) > 8 && Math.abs(drag.dx) > Math.abs(drag.dy)) {
+        drag.axis = 'x';
+        // Pick up an interrupted slide from its visible position, without a jump.
+        drag.offset = new DOMMatrixReadOnly(getComputedStyle(openItem.wrap).transform).m41;
+        drag.pages.forEach((it) => it.wrap.classList.add('dragging'));
+      }
       else if (drag.dy > 8) drag.axis = 'y';
       else return;
       openItem.wrap.classList.add('dragging');
@@ -1229,83 +1263,89 @@
       openItem.wrap.style.transform = `translate3d(0, ${openItem.y + dy * 0.9}px, 0) scale(${1 - Math.min(dy, 300) / 3000})`;
       return;
     }
-    const W = pageWidth();
-    const dir = drag.dx < 0 ? 1 : -1;
-    const pages = swipeItems();
-    const nb = pages[pages.indexOf(openItem) + dir] || null;
-    if (drag.neighbor && drag.neighbor !== nb) place(drag.neighbor, drag.dir * W, openItem.y);
-    if (nb && !drag.touched.has(nb)) {
-      nb.wrap.classList.add('dragging');
-      nb.wrap.style.zIndex = 899;
-    }
-    if (nb) drag.touched.set(nb, dir);
+    const W = drag.width;
+    const distance = drag.dx + drag.offset;
+    const dir = distance < 0 ? 1 : -1;
+    const nb = drag.pages[drag.index + dir] || null;
     drag.neighbor = nb;
     drag.dir = dir;
-    // Rubber-band at the first and last pass.
-    const x = nb ? drag.dx : drag.dx * 0.3;
-    place(openItem, x, openItem.y);
-    if (nb) place(nb, x + dir * W, openItem.y);
+    // All cards follow the same track. Compress overscroll at group boundaries.
+    const x = nb ? Math.max(-W, Math.min(W, distance)) : distance * .32 / (1 + Math.abs(distance) / W);
+    movePages(drag.pages, drag.index, x, W, openItem.y);
   });
 
   const endDrag = (e) => {
     if (!drag || e.pointerId !== drag.id) return;
     const d = drag;
     drag = null;
+    d.pages.forEach((it) => it.wrap.classList.remove('dragging'));
     if (!d.axis || !openItem) return;
     suppressClick = true;
     setTimeout(() => { suppressClick = false; }, 50);
     openItem.wrap.classList.remove('dragging');
-    d.touched.forEach((_, it) => it.wrap.classList.remove('dragging'));
+    const cancelled = e.type === 'pointercancel';
     if (d.axis === 'y') {
-      if (d.dy > 110) closePass();
+      if (!cancelled && d.dy > 110) closePass();
       else layout();
       return;
     }
-    const flick = Math.abs(d.vx) > 0.45 && Math.sign(d.vx) === -d.dir;
-    if (d.neighbor && (Math.abs(d.dx) > pageWidth() * 0.25 || flick)) {
-      commitPage(d.neighbor, d.dir, d.touched);
+    // A pause before releasing must not count as a fast flick.
+    const velocity = performance.now() - d.lastT < 100 ? d.vx : 0;
+    const distance = d.dx + d.offset;
+    const projected = distance + velocity * 180;
+    const advance = !cancelled && d.neighbor && Math.abs(distance) > 12 && (
+      Math.abs(distance) > d.width * .35 || (Math.sign(projected) === -d.dir && Math.abs(projected) > d.width * .5)
+    );
+    const remaining = advance ? Math.max(0, d.width - Math.abs(distance)) : Math.min(d.width, Math.abs(distance));
+    const duration = Math.round(Math.max(220, Math.min(380, 220 + remaining * .4 - Math.abs(velocity) * 35)));
+    if (advance) {
+      commitPage(d.neighbor, duration);
     } else {
-      place(openItem, 0, openItem.y);
-      d.touched.forEach((side, it) => place(it, side * pageWidth(), openItem.y));
-      parkLater(d.touched.keys());
+      pagingTransition(d.pages, duration);
+      movePages(d.pages, d.index, 0, d.width, openItem.y);
+      parkLater(d.pages, duration);
     }
   };
   window.addEventListener('pointerup', endDrag);
   window.addEventListener('pointercancel', endDrag);
 
-  // Slides the open pass out and its neighbor in; the old one rejoins the pile once it's off screen.
-  function commitPage(nb, dir, touched = new Map()) {
+  // Move the entire group to its new page with a shared settling curve.
+  function commitPage(nb, duration = 380) {
     if (!openItem || !swipeItems().includes(nb)) return;
     const old = openItem;
     const W = pageWidth();
-    place(old, -dir * W, old.y);
-    place(nb, 0, old.y);
+    const pages = swipeItems();
+    pagingTransition(pages, duration);
+    movePages(pages, pages.indexOf(nb), 0, W, old.y);
     nb.wrap.style.zIndex = 900;
-    touched.forEach((side, it) => { if (it !== nb) place(it, side * W, old.y); });
     nb.y = old.y;
     openItem = nb;
     // Recompute the header, field sizes and reader position when pass styles change.
     screen.classList.toggle('is-reader', hasContactless(nb.b));
     reader.hidden = !hasContactless(nb.b);
+    restartReader();
     fitContactlessFields();
     if (!reader.hidden) reader.style.transform = `translate3d(0, ${nb.y + nb.wrap.offsetHeight + 46}px, 0)`;
     syncOpenState();
     updatePanel();
-    nb.wrap.focus({ preventScroll: true });
-    parkLater([old, ...[...touched.keys()].filter((it) => it !== nb)]);
+    // Preserve keyboard focus without drawing a focus ring after a touch swipe.
+    if (old.wrap.matches(':focus-visible')) nb.wrap.focus({ preventScroll: true });
+    parkLater(pages, duration);
   }
 
-  // Off-screen cards jump back to the pile without animating across the screen.
-  function parkLater(cards) {
+  // Reconcile the stack after settling, without overlapping cleanup timers.
+  function parkLater(cards, duration = 380) {
     const list = [...cards];
-    setTimeout(async () => {
-      if (drag && drag.axis) { parkLater(list); return; }
+    clearTimeout(pagingTimer);
+    pagingTimer = setTimeout(async () => {
+      if (drag && drag.axis) { parkLater(list, duration); return; }
       const live = list.filter((it) => items.includes(it) && it !== openItem);
       live.forEach((it) => it.wrap.classList.add('no-anim'));
       layout();
       await nextFrame();
       live.forEach((it) => it.wrap.classList.remove('no-anim'));
-    }, 480);
+      list.forEach((it) => it.wrap.classList.remove('is-paging'));
+    }, duration + 30);
   }
 
   async function pageTo(dir) {
@@ -1325,7 +1365,7 @@
     await nextFrame();
     nb.wrap.classList.remove('no-anim');
     if (openItem !== selected) { layout(); return; }
-    commitPage(nb, dir);
+    commitPage(nb);
   }
 
   async function removeItem(it) {
