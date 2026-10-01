@@ -477,13 +477,11 @@
   }
 
   const MARK_ICONS = {
-    edited: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg>',
     unverified: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.5 3.2 8.2 7.5 9.5 4.3-1.3 7.5-5 7.5-9.5V6L12 3Z"/><path d="M12 8v5m0 3v.1"/></svg>',
   };
 
-  // Edited or unsigned passes can't stand in for a real ticket, so they show this instead of a barcode.
+  // Files that fail verification keep their barcodes hidden, even when edited.
   function passMark(b) {
-    if (b.edited) return ['edited', 'Edited keepsake', 'Barcode removed · edited ' + mediumDate(new Date(b.editedAt || Date.now()))];
     if (b.status === 'modified' || b.status === 'unsigned') return ['unverified', 'Unverified pass', 'Barcode hidden · not signed by its issuer'];
     return null;
   }
@@ -1332,8 +1330,8 @@
     }
 
     const notes = [];
-    if (b.edited) notes.push(`Edited ${mediumDate(new Date(b.editedAt || Date.now()))}. Edited passes keep their details but not their barcode.`);
-    else if (b.status === 'unsigned') notes.push('This file isn’t signed, so its barcode is hidden.');
+    if (b.edited) notes.push(`Edited ${mediumDate(new Date(b.editedAt || Date.now()))}. Display details changed; the original barcode is unchanged.`);
+    if (b.status === 'unsigned') notes.push('This file isn’t signed, so its barcode is hidden.');
     else if (b.status === 'modified') notes.push('This file was changed after it was signed, so its barcode is hidden.');
     if (pass.voided) notes.push('This pass has been voided.');
     const exp = parseIso(pass.expirationDate);
@@ -1618,7 +1616,7 @@
         const name = bp && key === 'auxiliaryFields' ? 'Second row' : bp && key === 'secondaryFields' ? 'Third row' : title;
         return fieldGroup(b, fields, key, name, limit);
       }),
-      el('p', 'ios-caption solo', 'Edited passes are saved as keepsakes. They keep every detail you set here, but the barcode is replaced with an “Edited keepsake” mark so the pass can’t be used as a ticket.'),
+      el('p', 'ios-caption solo', 'Editing changes this wallet’s display details. The original barcode stays the same and still refers to the original pass, including its original admission and seat. Barcodes from unverified files remain hidden.'),
     );
     editorBody.scrollTop = 0;
     present(editor, backdrop);

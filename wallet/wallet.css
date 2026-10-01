@@ -287,7 +287,7 @@ button { cursor: pointer; }
 .bc-error { font-size: 12px; color: #8e8e93; padding: 20px 10px; }
 .bc.dim { opacity: .35; }
 
-/* edited / unverified passes show this instead of a barcode */
+/* unverified passes show this instead of a barcode */
 .keepsake { display: flex; align-items: center; gap: 11px; max-width: 100%; padding: 11px 16px 11px 13px; border-radius: 12px; background: rgba(255, 255, 255, .92); color: #1c1c1e; text-align: left; }
 .keepsake svg { flex: none; width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .keepsake strong { display: block; font-size: 14px; line-height: 18px; font-weight: 600; }

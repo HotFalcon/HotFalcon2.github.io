@@ -55,7 +55,7 @@ Rules that apply to all styles:
 - `messageEncoding` `iso-8859-1` is sent as raw bytes (bwip-js `binarytext: true`). Anything else, or text that can't fit in Latin-1, is sent as UTF-8.
 - `altText` is printed under the barcode inside the white box.
 - Voided passes fade the barcode. Voided and expired notes appear in Pass Details.
-- **Edited** passes and **unverified** files never show a barcode. A small "Edited keepsake" or "Unverified pass" panel takes its place on the card face (see Editing below).
+- Edited passes retain the original barcode. Unverified files still hide their barcode and show an "Unverified pass" panel on the card face (see Editing below).
 
 ## The back of the pass
 
@@ -86,13 +86,13 @@ Since iOS 16, tapping **•••** opens a "Pass Details" sheet instead of flip
 - Passes are stored in **IndexedDB** (database `hotfalcon-wallet`, store `passes`). Each record holds the original `.pkpass` bytes (or a sample number), the chosen language, and any edit. The page asks for persistent storage with `navigator.storage.persist()`.
 - Browsers can still clear site data. Safari removes it from sites you haven't opened in 7 days, unless the site was added to the home screen. **Back up** downloads one `.json` file holding every pass (base64) and edit. **Restore** (or dropping that `.json` on the page) brings it back on any browser.
 
-## Editing (keepsakes)
+## Editing
 
 Use this when you don't have the exact pass from a game: duplicate a similar pass, then edit it.
 
 - The editor changes the name, organization, the three colors, images (logo, banner/strip, background, thumbnail, footer, depending on style), the transit type on boarding passes, and every field group: add, remove, or change the label and value. Date fields use a date-time picker, and number and currency fields use a number box.
 - Edits are stored separately from the original file, so **Reset to Original** always works. Uploaded images are shrunk (for example, to 1125 × 432 for a strip) before saving.
-- **An edited pass never shows a barcode.** Its card shows an "Edited keepsake · Barcode removed" panel instead. This is on purpose, so the editor can't be used to make a fake working ticket. Original, unedited passes keep their real barcode.
+- Editing a verified pass keeps its original barcode unchanged. Display edits do not change the admission, seat, or validity associated with that barcode. Unverified files continue to hide their barcode.
 
 ## Guesses (not confirmed from Apple docs)
 
@@ -131,6 +131,6 @@ These checks ran in headless Chromium:
 - A pass changed after signing (shown as Unverified, no barcode), and an unsigned pass.
 - A file that isn't a pass, which shows a friendly error.
 - Script injection attempts in `attributedValue` (none ran).
-- Opening and closing passes, the swipe-down gesture with real touch events, Edit → Save (barcode replaced by the keepsake mark), Duplicate, Remove with confirmation, Reset, and reload (the collection persists).
+- Opening and closing passes, the swipe-down gesture with real touch events, Edit → Save (original barcode retained), Duplicate, Remove with confirmation, Reset, and reload (the collection persists).
 - Backup in one browser profile and restore in a fresh one.
 - Light and dark mode, desktop with the iPhone frame, and a 390 × 844 phone screen in full-screen mode.
