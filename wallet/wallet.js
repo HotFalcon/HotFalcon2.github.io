@@ -996,11 +996,15 @@
   // ---------- The stack ----------
 
   const PEEK = 62;
+  const dots = el('div', 'w-dots');
+  dots.setAttribute('aria-hidden', 'true');
+  const place = (it, x, y) => { it.wrap.style.transform = `translate3d(${x}px, ${y}px, 0)`; };
 
   function layout() {
     const n = items.length;
     emptyState.hidden = n > 0;
     stack.hidden = n === 0;
+    if (dots.parentNode !== stack) stack.append(dots);
     if (!n) return;
     const base = scroller.scrollTop - stack.offsetTop;
     const viewH = scroller.clientHeight;
@@ -1012,13 +1016,41 @@
       else if (it === openItem) { y = base + 10; z = 900; }
       else { y = base + viewH - 78 + Math.min(pile, 3) * 8; z = 100 + pile; pile++; }
       it.y = y;
-      it.wrap.style.transform = `translate3d(0, ${y}px, 0)`;
+      place(it, 0, y);
       it.wrap.style.zIndex = z;
+    });
+    syncOpenState();
+    if (!openItem) stack.style.height = (n - 1) * PEEK + items[n - 1].wrap.offsetHeight + 'px';
+  }
+
+  function syncOpenState() {
+    items.forEach((it) => {
       it.wrap.classList.toggle('is-open', it === openItem);
       it.wrap.tabIndex = !openItem || it === openItem ? 0 : -1;
       it.wrap.setAttribute('aria-expanded', String(it === openItem));
     });
-    if (!openItem) stack.style.height = (n - 1) * PEEK + items[n - 1].wrap.offsetHeight + 'px';
+    renderDots();
+  }
+
+  // iOS-style page dots under an open pass; long collections show a sliding window of 9.
+  function renderDots() {
+    const n = items.length;
+    const show = !!openItem && n > 1;
+    dots.classList.toggle('show', show);
+    if (!show) return;
+    const idx = items.indexOf(openItem);
+    const MAX = 9;
+    const start = n <= MAX ? 0 : Math.min(Math.max(0, idx - 4), n - MAX);
+    const end = Math.min(n, start + MAX);
+    const nodes = [];
+    for (let i = start; i < end; i++) {
+      const d = el('i');
+      if (i === idx) d.className = 'on';
+      else if ((i === start && start > 0) || (i === end - 1 && end < n)) d.className = 'small';
+      nodes.push(d);
+    }
+    dots.replaceChildren(...nodes);
+    dots.style.transform = `translate3d(0, ${openItem.y + openItem.wrap.offsetHeight + 16}px, 0)`;
   }
 
   // Cards are ordered by z-index, so new ones are only appended; moving nodes would cancel their transitions.
@@ -1076,38 +1108,124 @@
     if (items.includes(was)) was.wrap.focus({ preventScroll: true });
   }
 
-  // Swipe an open pass down to put it back in the stack.
+  // Gestures on an open pass: swipe down to close it, swipe left/right for the next or previous pass.
   let drag = null;
   let suppressClick = false;
+  let deviceScale = 1;
+  const pageWidth = () => openItem.wrap.offsetWidth + 24;
+
   stack.addEventListener('pointerdown', (e) => {
     if (!openItem || !openItem.wrap.contains(e.target) || e.button > 0) return;
-    drag = { id: e.pointerId, y0: e.clientY, dy: 0, active: false };
+    drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0, axis: null, vx: 0, lastX: e.clientX, lastT: performance.now(), neighbor: null, dir: 0, touched: new Map() };
   });
+
   window.addEventListener('pointermove', (e) => {
     if (!drag || e.pointerId !== drag.id || !openItem) return;
-    drag.dy = e.clientY - drag.y0;
-    if (!drag.active && drag.dy > 8) {
-      drag.active = true;
+    const now = performance.now();
+    drag.vx = (e.clientX - drag.lastX) / Math.max(1, now - drag.lastT);
+    drag.lastX = e.clientX;
+    drag.lastT = now;
+    drag.dx = (e.clientX - drag.x0) / deviceScale;
+    drag.dy = (e.clientY - drag.y0) / deviceScale;
+    if (!drag.axis) {
+      if (Math.abs(drag.dx) > 8 && Math.abs(drag.dx) > Math.abs(drag.dy)) drag.axis = 'x';
+      else if (drag.dy > 8) drag.axis = 'y';
+      else return;
       openItem.wrap.classList.add('dragging');
     }
-    if (drag.active) {
+    if (drag.axis === 'y') {
       const dy = Math.max(0, drag.dy);
       openItem.wrap.style.transform = `translate3d(0, ${openItem.y + dy * 0.9}px, 0) scale(${1 - Math.min(dy, 300) / 3000})`;
+      return;
     }
+    const W = pageWidth();
+    const dir = drag.dx < 0 ? 1 : -1;
+    const nb = items[items.indexOf(openItem) + dir] || null;
+    if (drag.neighbor && drag.neighbor !== nb) place(drag.neighbor, drag.dir * W, openItem.y);
+    if (nb && !drag.touched.has(nb)) {
+      nb.wrap.classList.add('dragging');
+      nb.wrap.style.zIndex = 899;
+    }
+    if (nb) drag.touched.set(nb, dir);
+    drag.neighbor = nb;
+    drag.dir = dir;
+    // Rubber-band at the first and last pass.
+    const x = nb ? drag.dx : drag.dx * 0.3;
+    place(openItem, x, openItem.y);
+    if (nb) place(nb, x + dir * W, openItem.y);
   });
+
   const endDrag = (e) => {
     if (!drag || e.pointerId !== drag.id) return;
     const d = drag;
     drag = null;
-    if (!d.active || !openItem) return;
-    openItem.wrap.classList.remove('dragging');
+    if (!d.axis || !openItem) return;
     suppressClick = true;
     setTimeout(() => { suppressClick = false; }, 50);
-    if (d.dy > 110) closePass();
-    else layout();
+    openItem.wrap.classList.remove('dragging');
+    d.touched.forEach((_, it) => it.wrap.classList.remove('dragging'));
+    if (d.axis === 'y') {
+      if (d.dy > 110) closePass();
+      else layout();
+      return;
+    }
+    const flick = Math.abs(d.vx) > 0.45 && Math.sign(d.vx) === -d.dir;
+    if (d.neighbor && (Math.abs(d.dx) > pageWidth() * 0.25 || flick)) {
+      commitPage(d.neighbor, d.dir, d.touched);
+    } else {
+      place(openItem, 0, openItem.y);
+      d.touched.forEach((side, it) => place(it, side * pageWidth(), openItem.y));
+      parkLater(d.touched.keys());
+    }
   };
   window.addEventListener('pointerup', endDrag);
   window.addEventListener('pointercancel', endDrag);
+
+  // Slides the open pass out and its neighbor in; the old one rejoins the pile once it's off screen.
+  function commitPage(nb, dir, touched = new Map()) {
+    const old = openItem;
+    const W = pageWidth();
+    place(old, -dir * W, old.y);
+    place(nb, 0, old.y);
+    nb.wrap.style.zIndex = 900;
+    touched.forEach((side, it) => { if (it !== nb) place(it, side * W, old.y); });
+    nb.y = old.y;
+    openItem = nb;
+    syncOpenState();
+    updatePanel();
+    nb.wrap.focus({ preventScroll: true });
+    parkLater([old, ...[...touched.keys()].filter((it) => it !== nb)]);
+  }
+
+  // Off-screen cards jump back to the pile without animating across the screen.
+  function parkLater(cards) {
+    const list = [...cards];
+    setTimeout(async () => {
+      if (drag && drag.axis) { parkLater(list); return; }
+      const live = list.filter((it) => items.includes(it) && it !== openItem);
+      live.forEach((it) => it.wrap.classList.add('no-anim'));
+      layout();
+      await nextFrame();
+      live.forEach((it) => it.wrap.classList.remove('no-anim'));
+    }, 480);
+  }
+
+  async function pageTo(dir) {
+    if (!openItem || drag) return;
+    const nb = items[items.indexOf(openItem) + dir];
+    if (!nb) {
+      const it = openItem;
+      place(it, -dir * 28, it.y);
+      setTimeout(() => { if (openItem === it) place(it, 0, it.y); }, 160);
+      return;
+    }
+    nb.wrap.classList.add('no-anim');
+    nb.wrap.style.zIndex = 899;
+    place(nb, dir * pageWidth(), openItem.y);
+    await nextFrame();
+    nb.wrap.classList.remove('no-anim');
+    commitPage(nb, dir);
+  }
 
   async function removeItem(it) {
     await hideSheets();
@@ -1936,6 +2054,12 @@
   langSelect.addEventListener('change', () => { if (openItem) setLang(openItem, langSelect.value); });
 
   document.addEventListener('keydown', (e) => {
+    const sheetsClosed = asheet.hidden && editor.hidden && sheet.hidden;
+    if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && openItem && sheetsClosed && !/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) {
+      e.preventDefault();
+      pageTo(e.key === 'ArrowRight' ? 1 : -1);
+      return;
+    }
     if (e.key !== 'Escape') return;
     if (!asheet.hidden) dismiss(asheet, asBackdrop);
     else if (!editor.hidden) closeEditor();
@@ -1946,7 +2070,8 @@
   function fitDevice() {
     const phone = matchMedia('(max-width: 600px), (display-mode: standalone)').matches;
     const scale = phone ? 1 : Math.max(0.6, Math.min(1, (innerHeight - 32) / 868));
-    document.documentElement.style.setProperty('--device-scale', scale.toFixed(3));
+    deviceScale = +scale.toFixed(3);
+    document.documentElement.style.setProperty('--device-scale', String(deviceScale));
   }
   let resizeTimer = 0;
   addEventListener('resize', () => {
@@ -1971,7 +2096,7 @@
     }
     sortItems();
     stack.classList.add('no-anim');
-    stack.replaceChildren(...items.map((it) => it.wrap));
+    stack.replaceChildren(...items.map((it) => it.wrap), dots);
     layout();
     updatePanel();
     await nextFrame();
